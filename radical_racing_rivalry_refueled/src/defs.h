@@ -5,11 +5,9 @@
 
 #include "engine/primitives.h"
 #include "engine/fixedpoint.h"
+#include "res/strings.h"
 
-#define USE_RENDERER_LINE_BUFFER    (0)
-#if USE_RENDERER_LINE_BUFFER
-    #define BUFFER_CAPACITY         (128)
-#endif
+#define LINE_BUFFER_CAPACITY    (48)
 
 class SpriteRenderer;
 
@@ -35,7 +33,7 @@ void saveSave();
 void saveLoad();
 
 struct Defs {
-    static constexpr uint8_t ScreenW = 128;
+    static constexpr uint8_t ScreenW = 96;
     static constexpr uint8_t ScreenH = 64;
 
     // Sprites
@@ -176,10 +174,13 @@ struct Utils {
     template<typename T>
     static T upperClamp(T x, T limit) { return x > limit ? limit : x; }
 
+    template<typename T>
+    static void swap(T& a, T& b) { T tmp = a; a = b; b = tmp; }
+
     static void fastGetDigits(uint16_t value, char* dest, uint16_t nbDigits);
     static void formatTime(int32_t time, char* dest, bool addSign = false);
     static void formatDistance(int16_t distance, char* dest);
-    static void drawBlinkingText(SpriteRenderer* renderer, uint8_t stringID,
+    static void drawBlinkingText(SpriteRenderer* renderer, Strings stringID,
                                  uint8_t x, uint8_t y);
 };
 

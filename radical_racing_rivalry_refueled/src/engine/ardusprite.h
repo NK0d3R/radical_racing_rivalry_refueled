@@ -15,8 +15,8 @@
 #define ANCHOR_VCENTER  (1<<4)
 #define ANCHOR_BOTTOM   (1<<5)
 
-#define ARD_FLAGS_FLIP_X    (1)
-#define ARD_FLAGS_FLIP_Y    (2)
+#define ARD_FLAGS_FLIP_X    (1 << 0)
+#define ARD_FLAGS_FLIP_Y    (1 << 1)
 
 #define GET_W_FROM_SIZE(sz) (uint16_t)(sz & 0xFFFF)
 #define GET_H_FROM_SIZE(sz) (uint16_t)((sz & 0xFFFF0000) >> 16)
@@ -27,12 +27,12 @@ inline constexpr uint8_t invertBits(uint8_t value, uint8_t mask) {
     return ((~value) & mask) | (value & (~mask));
 }
 
-inline constexpr uint8_t getHeight(uint8_t value) {
-    return (value & 0x7F);
+inline constexpr uint8_t getBPPFromElementFlags(uint8_t value) {
+    return ((value >> 3) & 0x3);
 }
 
-inline constexpr uint8_t getOpacityBit(uint8_t value) {
-    return (value & 0x80);
+inline constexpr uint8_t getNoAlphaFromElementFlags(uint8_t value) {
+    return ((value >> 2) & 0x1);
 }
 
 struct SpriteElement {
@@ -62,7 +62,10 @@ struct SpriteAnim {
 struct Sprite {
     uint8_t   elemsNb;
     uint8_t   animsNb;
+    uint8_t   paletteSize;
+    uint8_t   sprFlags;
     const uint8_t*  imageData;
+    uint16_t* paletteData;
 
     const SpriteElement* elements;
     const SpriteAnim* anims;
@@ -74,6 +77,7 @@ struct Sprite {
                             int16_t posY, uint8_t flags);
     int32_t measureAnimationFrame(uint8_t animation, uint8_t frame);
     void create(const uint8_t* data);
+    virtual ~Sprite() { if (paletteData) delete[] paletteData; }
 } __attribute__((__packed__));
 
 struct Font : public Sprite {

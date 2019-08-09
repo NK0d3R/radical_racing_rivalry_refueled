@@ -149,8 +149,8 @@ class Level {
     uint8_t         maxStateCounter;
     bool            newRecord;
 
-    static constexpr uint8_t kAccelButton = B_BUTTON;
-    static constexpr uint8_t kClutchButton = A_BUTTON;
+    static constexpr uint8_t kAccelButton = BTN_B;
+    static constexpr uint8_t kClutchButton = BTN_A;
 
     void drawEndFlag(SpriteRenderer* renderer, uint8_t x, uint8_t y, uint8_t w);
     inline void drawHUD(SpriteRenderer* renderer);
@@ -166,7 +166,8 @@ class Level {
                                     uint8_t x, uint8_t y);
     void startScreenAnim(uint8_t x, uint8_t y, ScreenAnimType type,
                          uint8_t anim = 0, bool loop = false);
-    void foreachGameObject(auto func);
+    template<typename F>
+    void foreachGameObject(F func);
     void drawMarker(SpriteRenderer* renderer, const FP32& worldPos);
     void drawGameMarkers(SpriteRenderer* renderer);
     void setState(LevelState newState);

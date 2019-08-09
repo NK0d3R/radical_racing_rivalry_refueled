@@ -206,7 +206,8 @@ void Level::setState(LevelState newState) {
     }
 }
 
-void Level::foreachGameObject(auto func) {
+template<typename F>
+void Level::foreachGameObject(F func) {
     if (getGameMode() == Duel) {
         func(enemyCar);
     }
@@ -315,8 +316,10 @@ void Level::drawTimer(SpriteRenderer* renderer, uint8_t x, uint8_t y,
 
 void Level::drawResult(SpriteRenderer* renderer, uint8_t x, uint8_t y) {
     GetFont(Defs::FontMain)->drawString(renderer,
-                                    getString(Dead_Gearbox +
-                                    static_cast<Strings>(endResult)),
+                                    getString(
+                                        static_cast<Strings>(
+                                            static_cast<int>(Dead_Gearbox) +
+                                            static_cast<int>(endResult))),
                                     Defs::ScreenW / 2,
                                     y,
                                     ANCHOR_VCENTER | ANCHOR_HCENTER);
@@ -360,16 +363,16 @@ void Level::updateControls(uint8_t buttonsState, uint8_t oldButtonsState) {
     playerCar->pedalToTheMetal(buttonsState & kAccelButton);
     playerCar->setClutch(buttonsState & kClutchButton);
     if (playerCar->isClutched()) {
-        if ((changedButtons & buttonsState & UP_BUTTON)) {
+        if ((changedButtons & buttonsState & DPAD_UP)) {
             currentGearShift->onUp();
         }
-        if ((changedButtons & buttonsState & DOWN_BUTTON)) {
+        if ((changedButtons & buttonsState & DPAD_DOWN)) {
             currentGearShift->onDown();
         }
-        if ((changedButtons & buttonsState & LEFT_BUTTON)) {
+        if ((changedButtons & buttonsState & DPAD_LEFT)) {
             currentGearShift->onLeft();
         }
-        if ((changedButtons & buttonsState & RIGHT_BUTTON)) {
+        if ((changedButtons & buttonsState & DPAD_RIGHT)) {
             currentGearShift->onRight();
         }
     } else if (changedButtons & kClutchButton) {
@@ -431,7 +434,10 @@ void Level::updateState(int16_t dt) {
             bool enemyFinished = getGameMode() == Duel && enemyCar->isAlive()
                                  && enemyCar->getX() >= Defs::RaceLength;
             if (playerFinished && !enemyFinished) {
-                setEndRace(EndResultType::RaceEndTimeAttack + getGameMode());
+                setEndRace(
+                    static_cast<EndResultType>(
+                        static_cast<uint8_t>(EndResultType::RaceEndTimeAttack) +
+                        getGameMode()));
                 break;
             } else if (!playerFinished && enemyFinished) {
                 setEndRace(EndResultType::RaceEndLose);
@@ -440,7 +446,10 @@ void Level::updateState(int16_t dt) {
                 // edge case: both pass finish line on the same frame
                 if (playerCar->getX() >= enemyCar->getX()) {
                     setEndRace(
-                        EndResultType::RaceEndTimeAttack + getGameMode());
+                        static_cast<EndResultType>(
+                            static_cast<uint8_t>(
+                                EndResultType::RaceEndTimeAttack) +
+                            getGameMode()));
                 } else {
                     setEndRace(EndResultType::RaceEndLose);
                 }

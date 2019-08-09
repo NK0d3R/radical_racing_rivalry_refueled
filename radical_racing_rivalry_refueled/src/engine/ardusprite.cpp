@@ -7,6 +7,14 @@ void Sprite::create(const uint8_t* data) {
     int totalAnimFrames = 0;
     int totalFrameElems = 0;
 
+    sprFlags = pgm_read_byte(data++);
+
+    paletteSize = pgm_read_byte(data++);
+    paletteData = new uint16_t[paletteSize];
+    memcpy_P(static_cast<void*>(paletteData),
+             data, paletteSize * sizeof(uint16_t));
+    data += paletteSize * sizeof(uint16_t);
+
     elemsNb = pgm_read_byte(data++);
     animsNb = pgm_read_byte(data++);
 
@@ -35,7 +43,6 @@ void Sprite::create(const uint8_t* data) {
             totalFrameElems += currentFrame.elemsNb;
         }
     }
-
     data += totalFrameElems * sizeof(SpriteFrameElement);
     imageData = data;
 }
@@ -72,22 +79,20 @@ void Sprite::drawAnimationFrame(SpriteRenderer* renderer,
                  sizeof(SpriteElement));
 
         if (flags & ARD_FLAGS_FLIP_X) {
-          uint8_t elem_width = currentElem.width;
-          elemPosX = -elemPosX - elem_width + 1;
+          elemPosX = -elemPosX - currentElem.width + 1;
           elemFlags = invertBits(elemFlags, ARD_FLAGS_FLIP_X);
         }
 
-        uint8_t elem_height = getHeight(currentElem.height);
-
         if (flags & ARD_FLAGS_FLIP_Y) {
-          elemPosY = -elemPosY - elem_height + 1;
+          elemPosY = -elemPosY - currentElem.height + 1;
           elemFlags = invertBits(elemFlags, ARD_FLAGS_FLIP_Y);
         }
 
         renderer->drawSpriteData(imageData + currentElem.imageOffset,
+                                 paletteData,
                                  posX + elemPosX, posY + elemPosY,
-                                 currentElem.width, elem_height,
-                                 elemFlags | getOpacityBit(currentElem.height));
+                                 currentElem.width, currentElem.height,
+                                 elemFlags | (sprFlags << 2));
     }
 }
 

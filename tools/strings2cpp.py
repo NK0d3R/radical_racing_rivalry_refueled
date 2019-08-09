@@ -45,7 +45,7 @@ def writeDataFile(filepath, guardname, copyright, data, maxitems, tab_str):
                 output.write(",\n")
             crtoffset += crtsize
         output.write("\n};\n\n")
-        output.write("PROGMEM const uint8_t STRINGDATA[] = {");
+        output.write("PROGMEM const char STRINGDATA[] = {");
         alldata = ""
         for item in data:
             alldata += item[1]
@@ -63,7 +63,7 @@ def writeDataFile(filepath, guardname, copyright, data, maxitems, tab_str):
                 output.write(" ")
         output.write("\n};\n\n")
         output.write("#endif  // %s_HPP_\n" % (guardname))
-        
+
 def main():
     parser = argparse.ArgumentParser(description="String file to CPP converter")
     parser.add_argument("-i", "--input",
@@ -80,7 +80,7 @@ def main():
     matcher = re.compile(r"([^0-9][a-zA-Z0-9_-]*)\s+?[\"\'](.*?)[\"\']")
     stringdata = []
     copyrightdata = None
-    tab_str = " " * options.tabs   
+    tab_str = " " * options.tabs
 
     if options.copyright != "":
         with open(options.copyright, "rt") as copyright:

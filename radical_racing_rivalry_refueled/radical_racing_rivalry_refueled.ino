@@ -14,13 +14,13 @@
 #include "src/res/font.h"
 #include "src/res/fontmap.h"
 
-Arduboy app;
-uint8_t         buttonsState;
-uint8_t         oldButtonsState;
-SpriteRenderer  renderer;
-Menu            menu;
-Level           level;
-uint32_t        frameCounter;
+uint8_t             buttonsState;
+uint8_t             oldButtonsState;
+SpriteRenderer      renderer;
+TinyScreenCompact   tinyScreen;
+Menu                menu;
+Level               level;
+uint32_t            frameCounter;
 
 AppState appState = Invalid;
 
@@ -48,18 +48,18 @@ static constexpr uint32_t signature = (static_cast<uint32_t>('N') << 24) |
                                        saveVersion;
 
 void saveSave() {
-    EEPROM.put(EEPROM_STORAGE_SPACE_START, signature);
-    EEPROM.put(EEPROM_STORAGE_SPACE_START + sizeof(signature), bestTimes);
+   // EEPROM.put(EEPROM_STORAGE_SPACE_START, signature);
+   // EEPROM.put(EEPROM_STORAGE_SPACE_START + sizeof(signature), bestTimes);
 }
 
 void saveLoad() {
-    uint32_t sign;
-    EEPROM.get(EEPROM_STORAGE_SPACE_START, sign);
-    if(sign != signature) {
-        saveSave();
-    } else {
-        EEPROM.get(EEPROM_STORAGE_SPACE_START + sizeof(signature), bestTimes);
-    }
+    // uint32_t sign;
+    // EEPROM.get(EEPROM_STORAGE_SPACE_START, sign);
+    // if(sign != signature) {
+    //     saveSave();
+    // } else {
+    //     EEPROM.get(EEPROM_STORAGE_SPACE_START + sizeof(signature), bestTimes);
+    // }
 }
 
 void setAppState(AppState newState) {
@@ -85,35 +85,37 @@ uint32_t getFrameCounter() {
 }
 
 void setup() {
+    tinyScreen.start();
+    arcadeInit();
+    tinyScreen.setFramerate(30);
     saveLoad();
-    app.beginNoLogo();
-    app.setFrameRate(30);
-    app.clear();
 
     buttonsState = 0;
     oldButtonsState = 0;
     frameCounter = 0;
+
     GetSprite(Defs::SpriteEnv)->create(ENV_SPRITE_DATA);
     GetSprite(Defs::SpriteCar)->create(CAR_SPRITE_DATA);
     GetSprite(Defs::SpriteMenu)->create(MENU_SPRITE_DATA);
     GetFont(Defs::FontMain)->create(FONT_DATA, mapping, nb_map_elems,
                                     Defs::MainFontSpaceW, Defs::MainFontHeight,
                                     default_frame, map_start_char);
-    renderer.initialize(app.getBuffer(), 128);
+    renderer.initialize(reinterpret_cast<uint16_t*>(tinyScreen.getSurface()),
+                        Defs::ScreenW);
     renderer.setClip(0, 0, Defs::ScreenW, Defs::ScreenH);
     setAppState(Splash);
     //Serial.begin(9600);
 }
 
 void loop() {
-    if (!app.nextFrame()) {
+    if (!tinyScreen.nextFrame()) {
         return;
     }
 
-    app.clear();
+    tinyScreen.clearScreen();
 
     oldButtonsState = buttonsState;
-    buttonsState = app.buttonsState();
+    buttonsState = (getButtonsState() | (getJoystickState() << 2));
 
     switch(appState) {
         case Splash: {
@@ -123,8 +125,8 @@ void loop() {
             for (uint8_t idx = Strings::Title_1, x = 55, y = 10;
                  idx <= Strings::Title_3; ++idx, x += 10, y += 10) {
                     GetFont(Defs::FontMain)->drawString(
-                            &renderer, getString(idx), x, y,
-                            ANCHOR_LEFT | ANCHOR_TOP, 1);
+                            &renderer, getString(static_cast<Strings>(idx)),
+                            x, y, ANCHOR_LEFT | ANCHOR_TOP, 1);
             }
             GetFont(Defs::FontMain)->drawString(
                             &renderer, getString(Strings::Copyleft),
@@ -175,7 +177,7 @@ void loop() {
             menu.draw(&renderer, (Defs::ScreenW >> 1), 16);
         } break;
     }
-    app.display();
+    tinyScreen.display();
     ++frameCounter;
 }
 

@@ -71,7 +71,8 @@ void Menu::draw(SpriteRenderer* renderer, uint8_t x, uint8_t y) {
                                     y, 0);
         } else {
             Font* font = GetFont(Defs::FontMain);
-            font->drawString(renderer, getString(visualID), x, y,
+            font->drawString(renderer,
+                             getString(static_cast<Strings>(visualID)), x, y,
                              ANCHOR_HCENTER | ANCHOR_VCENTER);
         }
         y += (height >> 1);
@@ -80,19 +81,19 @@ void Menu::draw(SpriteRenderer* renderer, uint8_t x, uint8_t y) {
 
 void Menu::updateControls(uint8_t buttonsState, uint8_t oldButtonsState) {
     uint8_t changedButtons = (buttonsState ^ oldButtonsState);
-    if ((changedButtons & buttonsState & UP_BUTTON)) {
+    if ((changedButtons & buttonsState & DPAD_UP)) {
         onUp();
     }
-    if ((changedButtons & buttonsState & DOWN_BUTTON)) {
+    if ((changedButtons & buttonsState & DPAD_DOWN)) {
         onDown();
     }
-    if ((changedButtons & buttonsState & LEFT_BUTTON)) {
+    if ((changedButtons & buttonsState & DPAD_LEFT)) {
         onLeft();
     }
-    if ((changedButtons & buttonsState & RIGHT_BUTTON)) {
+    if ((changedButtons & buttonsState & DPAD_RIGHT)) {
         onRight();
     }
-    if ((changedButtons & buttonsState & B_BUTTON)) {
+    if ((changedButtons & buttonsState & BTN_A)) {
         onConfirm();
     }
 }
@@ -137,20 +138,20 @@ void Menu::restart() {
     crtSelection = 0;
 }
 
-PROGMEM const int16_t mainmenu[] = {
+PROGMEM const uint16_t mainmenu[] = {
     Menu::itemDataCreate(0, 1, 1, 0, 24),
     Menu::itemDataCreate(0, 1, 1, 2, 18),
     Menu::itemDataCreate(Defs::MenuActionStart, 0, 1, 4, 14)
 };
 
-PROGMEM const int16_t endracemenu[] = {
+PROGMEM const uint16_t endracemenu[] = {
     Menu::itemDataCreate(Defs::MenuActionRestart, 0, 0,
                          Strings::Igm_Restart, 16),
     Menu::itemDataCreate(Defs::MenuActionBackToMM, 0, 0,
                          Strings::Igm_BackToMM, 16)
 };
 
-int16_t* getMenuData(uint8_t menu) {
-    static int16_t* menus[] = { mainmenu, endracemenu };
+const uint16_t* getMenuData(uint8_t menu) {
+    static const uint16_t* menus[] = { mainmenu, endracemenu };
     return menus[menu];
 }

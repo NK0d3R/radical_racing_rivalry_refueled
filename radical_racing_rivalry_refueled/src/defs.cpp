@@ -60,8 +60,8 @@ void Utils::formatDistance(int16_t distance, char* dest) {
     dest[6] = 0;
 }
 
-static void Utils::drawBlinkingText(SpriteRenderer* renderer, uint8_t stringID,
-                                    uint8_t x, uint8_t y) {
+void Utils::drawBlinkingText(SpriteRenderer* renderer, Strings stringID,
+                             uint8_t x, uint8_t y) {
     if ((getFrameCounter() & 0xF) < 7) {
         GetFont(Defs::FontMain)->drawString(renderer,
                                             getString(stringID),

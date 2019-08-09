@@ -4,6 +4,7 @@
 #define FIXEDPOINT_H_
 
 #include "../stdinc.h"
+#include <type_traits>
 
 template<typename T, typename T2, int shift>
 struct FPValue {
@@ -12,24 +13,20 @@ struct FPValue {
 #define UPSHIFT(x)      ((x) << shift)
 #define DOWNSHIFT(x)    ((x) >> shift)
     constexpr FPValue(): value(0) {}
-
-#define INTEGRAL_CTOR(type)                             \
-    constexpr FPValue(type v): value(UPSHIFT((T)v)) {}
-
-#define FLOAT_CTOR(type)                                \
-    constexpr FPValue(type v):                          \
-                  value((T)(v * (type)UPSHIFT(1)))  {}
-
-    INTEGRAL_CTOR(int16_t);
-    INTEGRAL_CTOR(int32_t);
-    FLOAT_CTOR(float);
-
-    explicit FPValue(const void* progmem) {
-        memcpy_P(this, progmem, sizeof(*this));
-    }
-
     constexpr FPValue(const FPValue& other): value(other.value) {}
     constexpr FPValue(const FPValue&& other): value(other.value) {}
+
+    template<typename R>
+    constexpr FPValue(R v, typename std::enable_if<
+                    std::is_integral<R>::value>::type* = 0):
+            value(UPSHIFT((T)v))
+    {}
+
+    template<typename R>
+    constexpr FPValue(R v, typename std::enable_if<
+                    std::is_floating_point<R>::value>::type* = 0):
+            value((T)(v * (R)UPSHIFT(1)))
+    {}
 
     inline FPValue& operator=(const FPValue& other) {
         value = other.value;

@@ -10,7 +10,7 @@ class SpriteRenderer;
 
 class Menu {
  public:
-    void set(uint16_t* menu, uint8_t nbi, uint8_t w, uint8_t anim) {
+    void set(const uint16_t* menu, uint8_t nbi, uint8_t w, uint8_t anim) {
         menuData = menu;
         nbItems = nbi;
         width = w;
@@ -46,7 +46,7 @@ class Menu {
     void drawSpriteElementBackground(SpriteRenderer* renderer,
                                      int16_t x, int16_t y, int8_t height,
                                      bool hasArrows);
-    uint16_t*   menuData;
+    const uint16_t*   menuData;
     uint16_t    optionStatus;
     uint8_t     nbItems;
     uint8_t     crtSelection;
@@ -77,6 +77,6 @@ class Menu {
     void changeCrtItemOption(bool left);
 };
 
-int16_t* getMenuData(uint8_t menu);
+const uint16_t* getMenuData(uint8_t menu);
 
 #endif  // MENU_H_

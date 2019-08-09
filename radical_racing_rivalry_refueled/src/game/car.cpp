@@ -20,18 +20,18 @@ constexpr int16_t kTorques[] PROGMEM = {
 
 constexpr uint8_t kNbTorques = (sizeof(kTorques)/sizeof(FP32));
 
-constexpr FP32 kGearRatios[] PROGMEM = {
-    FP32(0.0f),
-    FP32(9.13f),
-    FP32(6.65f),
-    FP32(4.43f),
-    FP32(3.51f),
-    FP32(2.89f)
+constexpr float kGearRatios[] = {
+    0.0f,
+    9.13f,
+    6.65f,
+    4.43f,
+    3.51f,
+    2.89f
 };
 
 constexpr FP32 kWheelCircumference(2.0f * 3.141539f * 0.303f);
-constexpr FP32 kWheelRadius = FP32(0.303f);
-constexpr FP32 kVehicleMass = FP32(1490);
+constexpr FP32 kWheelRadius(0.303f);
+constexpr FP32 kVehicleMass(1490);
 
 constexpr int16_t kWindResistanceMult = -26;
 constexpr int16_t kWindResistanceDiv =  100;
@@ -46,18 +46,18 @@ FP32 RPM2Torque(FP32 rpm) {
     int16_t idx = (rpmI / 1000);
     FP32 crtTorque((int16_t)pgm_read_word(&kTorques[idx]));
     if (idx == (kNbTorques - 1)) {
-        return FP32(crtTorque);
+        return crtTorque;
     }
     int16_t rpmOver = rpmI - (idx * 1000);
     if (rpmOver == 0) {
-        return FP32(crtTorque);
+        return crtTorque;
     }
     FP32 endTorque((int16_t)pgm_read_word(&kTorques[idx + 1]));
     return crtTorque + (((endTorque - crtTorque) * rpmOver) / 1000);
 }
 
 FP32 getGearRatio(int16_t idx) {
-    return FP32(&kGearRatios[idx]);
+    return FP32(kGearRatios[idx]);
 }
 
 void Car::reset(const FP32& z) {
@@ -80,7 +80,7 @@ void Car::reset(const FP32& z) {
     wheels.setAnimation(Defs::AnimCarWheels, 0, true);
 }
 
-void Car::shiftGear(bool up = true) {
+void Car::shiftGear(bool up) {
     if (up == true) {
         if (gear < Defs::MaxGear) {
             gear++;
@@ -186,7 +186,7 @@ void Car::updateEngine(int16_t dt) {
 
 void Car::updateWheelsAnim(int16_t dt) {
     int16_t newDT = ((wheelsRPM * (int32_t)dt) / 125).getInt();
-    newDT = Utils::upperClamp(newDT, 200);
+    newDT = Utils::upperClamp(newDT, static_cast<int16_t>(200));
     wheels.update(newDT);
 }
 

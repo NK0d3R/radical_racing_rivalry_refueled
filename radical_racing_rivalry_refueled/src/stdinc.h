@@ -3,11 +3,12 @@
 #ifndef STDINC_H_
 #define STDINC_H_
 
-#include "lib/Arduboy/src/Arduboy.h"
 #include <avr/pgmspace.h>
-#include <EEPROM.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include "lib/TinyScreenCompact.h"
+#include "lib/TinyArcade.h"
+#include "controls.h"
 
 #endif  // STDINC_H_

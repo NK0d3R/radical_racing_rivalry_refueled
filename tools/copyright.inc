@@ -1,2 +1,2 @@
-// Copyright 2018 Catalin G. Manciu
+// Copyright 2019 Catalin G. Manciu
 

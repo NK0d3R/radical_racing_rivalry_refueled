@@ -21,7 +21,7 @@ class GameObject {
     Level*      parent;
  public:
     GameObject(Level* p, uint8_t scrW):
-        parent(p), xPos(0), zPos(0), screenW(scrW) {}
+        parent(p), screenW(scrW) {}
     void updateScreenX();
     bool isVisible();
     FP32& getX()            { return xPos; }

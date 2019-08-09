@@ -6,8 +6,8 @@
 #include "../stdinc.h"
 #include "../res/strings.h"
 
-uint8_t* getString(Strings str);
-uint8_t* getStringBuffer();
+char* getString(Strings str);
+char* getStringBuffer();
 uint8_t  getStringLen(Strings str);
 
 #endif  // STRINGMGR_H_

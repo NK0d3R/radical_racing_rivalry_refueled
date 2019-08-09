@@ -1,4 +1,4 @@
-// Copyright 2018 Catalin G. Manciu
+// Copyright 2019 Catalin G. Manciu
 
 #ifndef STRINGS_H_
 #define STRINGS_H_
