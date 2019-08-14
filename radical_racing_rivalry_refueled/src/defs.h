@@ -7,30 +7,15 @@
 #include "engine/fixedpoint.h"
 #include "res/strings.h"
 
-#define LINE_BUFFER_CAPACITY    (48)
+#define LINE_BUFFER_CAPACITY    (64)
+#define SHOW_FPS                (1)
+#define ENABLE_BLUR             (1)
 
 class SpriteRenderer;
 
 typedef FPValue<int32_t, int64_t, 8> FP32;
 typedef VectorT<FP32> Vector;
 typedef LineT<FP32> Line;
-
-uint32_t getFrameCounter();
-
-enum AppState {
-    Invalid,
-    Splash,
-    MainMenu,
-    Ingame,
-    AfterGameMenu
-};
-
-void setAppState(AppState newState);
-
-int32_t getTimeRecord(uint8_t gameMode, uint8_t gearMode);
-void updateTimeRecord(uint8_t gameMode, uint8_t gearMode, int32_t newValue);
-void saveSave();
-void saveLoad();
 
 struct Defs {
     static constexpr uint8_t ScreenW = 96;
@@ -103,7 +88,8 @@ struct Defs {
     // SpriteMenu anims
     enum : uint8_t {
         AnimMenuElements = 0,
-        AnimMenuMain
+        AnimMenuMain,
+        AnimLogo
     };
 
     // AnimMenuElements frames
@@ -177,11 +163,45 @@ struct Utils {
     template<typename T>
     static void swap(T& a, T& b) { T tmp = a; a = b; b = tmp; }
 
+    // Need to switch endian-ness
+    // BBBBB GGG GGG RRRRR -> (lower)GGG RRRRR BBBBB (upper)GGG
+    static constexpr uint16_t make16BitColor(uint8_t r, uint8_t g, uint8_t b) {
+        return make16BitColorLow((r >> 3), (g >> 2), (b >> 3));
+    }
+
+    static constexpr uint16_t make16BitColorLow(uint8_t r,
+                                                uint8_t g,
+                                                uint8_t b) {
+    #define R(r)    (r << 8)
+    #define G(g)    (((g & 0x7) << 13) | (g >> 3))
+    #define B(b)    (b << 3)
+        return (R(r) | G(g) | B(b));
+    #undef R
+    #undef G
+    #undef B
+    }
+
+    static constexpr uint8_t getRLow(uint16_t value) {
+        return ((value >> 8) & 0x1f);
+    }
+
+    static constexpr uint8_t getGLow(uint16_t value) {
+        return ((value >> 13) | (value & 0x7) << 3);
+    }
+
+    static constexpr uint8_t getBLow(uint16_t value) {
+        return ((value >> 3) & 0x1f);
+    }
+
     static void fastGetDigits(uint16_t value, char* dest, uint16_t nbDigits);
     static void formatTime(int32_t time, char* dest, bool addSign = false);
     static void formatDistance(int16_t distance, char* dest);
     static void drawBlinkingText(SpriteRenderer* renderer, Strings stringID,
                                  uint8_t x, uint8_t y);
+    static uint32_t random32() {
+        return ((static_cast<uint32_t>(random(65535)) << 16) |
+                 static_cast<uint32_t>(random(65535)));
+    }
 };
 
 #endif  // DEFS_H__

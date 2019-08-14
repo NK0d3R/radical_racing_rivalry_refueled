@@ -186,7 +186,7 @@ void TinyScreenCompact::begin() {
   //use libarary functions for remaining init
   setBrightness(10);
   writeRemap();
-  clearScreen();
+  //clearScreen();
   on();
 }
 
@@ -209,15 +209,8 @@ void TinyScreenCompact::start(uint8_t bitDepth,
 #endif
 }
 
-bool TinyScreenCompact::nextFrame() {
-  static long lastFrameTime = 0;
-  long currentTime = millis();
-  if (currentTime - lastFrameTime < _waitTimeMillis) {
-    return false;
-  }
-  lastFrameTime = currentTime;
+void TinyScreenCompact::beginFrame() {
   memset(_backBuffer, 0, getBufferSize());
-  return true;
 }
 
 void TinyScreenCompact::goTo(uint8_t x, uint8_t y) {
@@ -336,7 +329,7 @@ void TinyScreenCompact::writeBuffer(uint8_t *buffer,int count) {
 }
 #endif
 
-void TinyScreenCompact::display() {
+void TinyScreenCompact::endFrame() {
   goTo(0, 0);
   startData();
   writeBuffer(_backBuffer, getBufferSize());

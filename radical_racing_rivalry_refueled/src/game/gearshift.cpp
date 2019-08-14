@@ -4,6 +4,7 @@
 #include "gearshift.h"
 #include "../res/sprites.h"
 #include "../engine/renderer.h"
+#include "../game.h"
 
 void GearShiftAuto::reset() {
     scrollAmount = 0;
@@ -23,7 +24,7 @@ void GearShiftAuto::update() {
 }
 
 void GearShiftAuto::draw(SpriteRenderer* renderer, int16_t x, int16_t y) {
-    uint8_t arrowOffset = (getFrameCounter() >> 1) & 0x3;
+    uint8_t arrowOffset = (RRRR::getInstance().getFrameCounter() >> 1) & 0x3;
     Sprite* car = GetSprite(Defs::SpriteCar);
     car->drawAnimationFrame(renderer, Defs::AnimCarGearsAuto,
                             Defs::HUDGearsManualBg, x, y, 0);

@@ -81,5 +81,6 @@ def main():
             if stop:
                 break
         output.write("};\n\n#endif  // %s_H_\n" % (variable_name_base))
+
 if __name__=="__main__":
     main()

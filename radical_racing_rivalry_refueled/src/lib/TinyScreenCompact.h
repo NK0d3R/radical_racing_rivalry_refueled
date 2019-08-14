@@ -24,7 +24,7 @@ The latest version of this library can be found at https://tiny-circuits.com/
 #include <SPI.h>
 #include <Arduino.h>
 
-#define USE_DMA             (1)
+#define USE_DMA             (0)
 #if defined USE_DMA && !defined(ARDUINO_ARCH_SAMD)
   #error "Unsupported architecture for DMA"
 #endif
@@ -91,19 +91,13 @@ class TinyScreenCompact {
     void setX(uint8_t, uint8_t);
     void setY(uint8_t, uint8_t);
     void goTo(uint8_t x, uint8_t y);
-    bool nextFrame();
-    void display();
-    void setFramerate(uint8_t framerate) { _waitTimeMillis = 1000 / framerate; }
+    void beginFrame();
+    void endFrame();
     uint8_t* getSurface() { return _backBuffer; }
     uint16_t getBufferSize() {
                   return xRes * yRes * (static_cast<uint8_t>(_bitDepth) + 1); }
-    uint16_t getLineSize() {
-                  return xRes * (static_cast<uint8_t>(_bitDepth) + 1); }
   private:
     uint8_t* _backBuffer;
-    uint8_t  _buttonState;
-    uint8_t  _joystickState;
-    uint8_t  _waitTimeMillis;
     union {
       struct {
         unsigned int  _flipDisplay : 1;

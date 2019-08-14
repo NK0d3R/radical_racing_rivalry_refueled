@@ -5,6 +5,7 @@
 #include "../res/sprites.h"
 #include "../engine/ardusprite.h"
 #include "../engine/renderer.h"
+#include "../game.h"
 
 /*
  * Menu Data bits: [high] h h h h h i i i i f o o a a a [low]
@@ -24,7 +25,7 @@ void Menu::drawSpriteElementBackground(SpriteRenderer* renderer,
                                                     Defs::MenuItemBg));
     renderer->setClip(x - (width >> 1), y - (height >> 1), width, height);
     int16_t maxX = renderer->getClip().maxX;
-    uint32_t frame = getFrameCounter();
+    uint32_t frame = RRRR::getInstance().getFrameCounter();
     for (uint8_t scale = 2; scale <= 3; ++scale) {
         int16_t offset = (frame * (scale << 1)) % bgTileW;
         int16_t crtX = renderer->getClip().x - offset;
@@ -36,9 +37,9 @@ void Menu::drawSpriteElementBackground(SpriteRenderer* renderer,
         }
     }
     renderer->drawLine(renderer->getClip().x, renderer->getClip().y,
-                       maxX, renderer->getClip().y);
+                       maxX, renderer->getClip().y, 0xFFFF);
     renderer->drawLine(renderer->getClip().x, renderer->getClip().maxY,
-                       maxX, renderer->getClip().maxY);
+                       maxX, renderer->getClip().maxY, 0xFFFF);
     if (hasArrows) {
         uint8_t arrowOffset = 3 + ((frame & 5) >> 2);
         spr->drawAnimationFrame(renderer,

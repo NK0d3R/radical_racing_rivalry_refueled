@@ -5,6 +5,7 @@
 
 #include "../stdinc.h"
 #include "../defs.h"
+#include "../controls.h"
 #include "../engine/ardusprite.h"
 #include "gearshift.h"
 #include "gameobject.h"
@@ -58,6 +59,7 @@ class Level {
         int8_t yTop;
         int8_t yBot;
         int8_t density;
+        const uint16_t color = Utils::make16BitColor(0xFF, 0x00, 0xFF);
         void drawSingleLine(SpriteRenderer* renderer, int16_t x,
                             int16_t yTop, int16_t yBot);
      public:
@@ -79,6 +81,14 @@ class Level {
                           BackgroundLayer(factor), yPos(y),
                           width(width), frame(frame) {
             }
+        virtual void draw(SpriteRenderer* renderer,
+                          const FP32& cameraPosition);
+    };
+
+    class BackgroundBlur : public BackgroundLayer {
+     public:
+        BackgroundBlur() : BackgroundLayer(0) {
+        }
         virtual void draw(SpriteRenderer* renderer,
                           const FP32& cameraPosition);
     };

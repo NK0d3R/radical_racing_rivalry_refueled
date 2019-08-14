@@ -4,7 +4,7 @@
 #include "stringmgr.h"
 #include "strings.hpp"
 
-static char s_strBuffer[32] = {0};
+char s_strBuffer[32] = {0};
 
 char* getString(Strings str) {
     uint16_t stringInfo = pgm_read_word(&STRINGINFO[static_cast<int8_t>(str)]);

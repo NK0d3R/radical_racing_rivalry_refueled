@@ -6,6 +6,7 @@
 #include "../res/stringmgr.h"
 #include "../engine/renderer.h"
 #include "../res/sprites.h"
+#include "../game.h"
 
 Level::BackgroundLayer* Level::bgLayers[] = {
     new BackgroundSprite(25, 0, Defs::BackgroundSun, 0),
@@ -32,7 +33,8 @@ void Level::BackgroundGrid::drawSingleLine(SpriteRenderer* renderer,
         renderer->drawLine(current.start.x.getInt(),
                            current.start.y.getInt(),
                            current.end.x.getInt(),
-                           current.end.y.getInt());
+                           current.end.y.getInt(),
+                           color);
     }
 }
 
@@ -51,7 +53,7 @@ void Level::BackgroundGrid::draw(SpriteRenderer* renderer,
     int8_t mid = ((yTop + yBot) >> 1);
     int8_t values[4] = { yTop, yBot, mid, ((yTop + mid) >> 1) };
     for (auto y : values) {
-        renderer->drawLine(0, y, Defs::ScreenW - 1, y);
+        renderer->drawLine(0, y, Defs::ScreenW - 1, y, color);
     }
 }
 
@@ -145,6 +147,11 @@ void Level::BackgroundChopper::draw(SpriteRenderer* renderer,
     if (waiting == false) {
         chopperAnim.draw(renderer, xPos.getInt(), yPos);
     }
+}
+
+void Level::BackgroundBlur::draw(SpriteRenderer* renderer,
+                                 const FP32& cameraPosition) {
+    renderer->reasonablyFastBlur();
 }
 
 Level::Level() {
@@ -340,7 +347,8 @@ void Level::drawEndFlag(SpriteRenderer* renderer, uint8_t x,
     static PROGMEM const int8_t displ[] = {
         0, 0, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1
     };
-    uint8_t displIndex = (getFrameCounter() >> 1) % sizeof(displ);
+    uint8_t displIndex = (RRRR::getInstance().getFrameCounter() >> 1) %
+                            sizeof(displ);
     int8_t displY = 0;
     for (int8_t crtX = x; crtX < x + w; ++crtX) {
         if (((crtX - x) & 3) == 0) {
@@ -389,14 +397,14 @@ void Level::updateControls(uint8_t buttonsState, uint8_t oldButtonsState) {
 void Level::checkRecord() {
     uint8_t gearMode = getGearMode();
     uint8_t gameMode = getGameMode();
-    int32_t timeRecord = getTimeRecord(gameMode, gearMode);
+    int32_t timeRecord = RRRR::getInstance().getTimeRecord(gameMode, gearMode);
 
     if (levelTimer < timeRecord) {
         newRecord = true;
     }
 
     if (newRecord) {
-        updateTimeRecord(gameMode, gearMode, levelTimer);
+        RRRR::getInstance().updateTimeRecord(gameMode, gearMode, levelTimer);
     }
 }
 
@@ -472,7 +480,7 @@ void Level::updateState(int16_t dt) {
             }
             stateCounter++;
             if (stateCounter > maxStateCounter) {
-                setAppState(AfterGameMenu);
+                RRRR::getInstance().setState(AfterGameMenu);
                 setState(Invalid);
             }
         break;
@@ -523,7 +531,8 @@ void Level::drawMarker(SpriteRenderer* renderer, const FP32& worldPos) {
         renderer->drawLine(current.start.x.getInt(),
                            current.start.y.getInt(),
                            current.end.x.getInt(),
-                           current.end.y.getInt());
+                           current.end.y.getInt(),
+                           0xFFFF);
     }
 }
 

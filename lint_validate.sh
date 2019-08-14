@@ -6,6 +6,7 @@ GOOGLE_LINT=$TOOLS_FOLDER/third-party/cpplint/cpplint.py
 SRC_FOLDERS="$PROJECT_SRC_FOLDER
              $PROJECT_SRC_FOLDER/engine
              $PROJECT_SRC_FOLDER/game
+             $PROJECT_SRC_FOLDER/game/states
              $PROJECT_SRC_FOLDER/res"
 for srcdir in $SRC_FOLDERS; do
     echo "Checking folder $srcdir"

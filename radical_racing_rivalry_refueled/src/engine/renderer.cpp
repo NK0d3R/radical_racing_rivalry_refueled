@@ -4,19 +4,18 @@
 
 uint8_t SpriteRenderer::lineBuffer[LINE_BUFFER_CAPACITY] = {0};
 
-void SpriteRenderer::initialize(uint16_t* fb, uint8_t fs) {
+void SpriteRenderer::initialize(uint16_t* fb, uint8_t fw, uint8_t fh) {
     frameBuffer = fb;
-    frameStride = fs;
+    frameWidth = fw;
+    frameHeight = fh;
 }
 
 void SpriteRenderer::setClip(int16_t x, int16_t y, int16_t w, int16_t h) {
     clip.set(x, y, w, h);
 }
 
-void SpriteRenderer::putPixel(uint8_t x, uint8_t y) {
-    uint16_t destRowByte = x + (y >> 3) * frameStride;
-    uint8_t destBit = (y & 7);
-    frameBuffer[destRowByte] |= (1 << destBit);
+void SpriteRenderer::putPixel(uint8_t x, uint8_t y, uint16_t color) {
+    frameBuffer[y * frameWidth + x] = color;
 }
 
 void SpriteRenderer::fastDrawVerticalPattern(uint8_t pattern,
@@ -48,40 +47,52 @@ void SpriteRenderer::drawSpriteData(const uint8_t* spriteData,
     bool isOpaque = getNoAlphaFromElementFlags(flags);
     uint8_t bppMode = getBPPFromElementFlags(flags);
 
-    static uint8_t modes[] = {1, 2, 4, 8};
-
-    uint8_t bpp = modes[bppMode];
-    int16_t currentOffset = dataBounds.x + (dataBounds.y * frameStride);
-    int16_t lineOffsetIncr = frameStride;
+    int16_t currentOffset = dataBounds.x + (dataBounds.y * frameWidth);
+    int16_t lineOffsetIncr = frameWidth;
     uint8_t currentLine = 0;
 
     if (yFlipped) {
-        currentOffset += (dataBounds.h - 1) * frameStride;
-        lineOffsetIncr = -frameStride;
+        currentOffset += (dataBounds.h - 1) * frameWidth;
+        lineOffsetIncr = -frameWidth;
     }
 
     if (xFlipped) {
         currentOffset += (dataBounds.w - 1);
     }
 
-    for (uint8_t currentLine = 0; currentLine < dataBounds.h; ++currentLine) {
-        transferLineAlpha(bpp, spriteData, paletteData,
-                          static_cast<uint8_t>(srcX),
-                          static_cast<uint8_t>(srcY + currentLine),
-                          static_cast<uint8_t>(dataBounds.w),
-                          width,
-                          currentOffset, (xFlipped ? -1 : 1));
-        currentOffset += lineOffsetIncr;
+    if (bppMode == 3) {
+        for (uint8_t currentLine = 0; currentLine < dataBounds.h;
+             ++currentLine) {
+            transferLine8Alpha(spriteData, paletteData,
+                               static_cast<uint8_t>(srcX),
+                               static_cast<uint8_t>(srcY + currentLine),
+                               static_cast<uint8_t>(dataBounds.w),
+                               width,
+                               currentOffset, (xFlipped ? -1 : 1));
+            currentOffset += lineOffsetIncr;
+        }
+    } else {
+        static uint8_t modes[] = {1, 2, 4};
+        uint8_t bpp = modes[bppMode];
+        for (uint8_t currentLine = 0; currentLine < dataBounds.h;
+             ++currentLine) {
+            transferLineAlpha(bpp, spriteData, paletteData,
+                              static_cast<uint8_t>(srcX),
+                              static_cast<uint8_t>(srcY + currentLine),
+                              static_cast<uint8_t>(dataBounds.w),
+                              width,
+                              currentOffset, (xFlipped ? -1 : 1));
+            currentOffset += lineOffsetIncr;
+        }
     }
 }
 
-void SpriteRenderer::transferLineAlpha(
-                            uint8_t bpp,
-                            const uint8_t* spriteData,
-                            const uint16_t* paletteData,
-                            uint8_t srcX, uint8_t srcY, uint8_t width,
-                            uint8_t baseWidth, int16_t offset,
-                            int16_t offsetIncr) {
+void SpriteRenderer::transferLineAlpha(uint8_t bpp,
+                                       const uint8_t* spriteData,
+                                       const uint16_t* paletteData,
+                                       uint8_t srcX, uint8_t srcY,
+                                       uint8_t width, uint8_t baseWidth,
+                                       int16_t offset, int16_t offsetIncr) {
     uint16_t mask = (1 << static_cast<uint16_t>(bpp)) - 1;
     uint8_t m = mask;
     int16_t moduleStride = (baseWidth * bpp + 7) / 8;
@@ -105,8 +116,26 @@ void SpriteRenderer::transferLineAlpha(
     }
 }
 
+void SpriteRenderer::transferLine8Alpha(const uint8_t* spriteData,
+                                        const uint16_t* paletteData,
+                                        uint8_t srcX, uint8_t srcY,
+                                        uint8_t width, uint8_t baseWidth,
+                                        int16_t offset, int16_t offsetIncr) {
+    int16_t crtOffset = (srcY * baseWidth) + srcX;
+    uint8_t* buffer = lineBuffer;
+    memcpy_P(buffer, spriteData + crtOffset, baseWidth - srcX);
+    for (uint8_t currentPix = 0; currentPix < width; ++currentPix) {
+        uint8_t pix = buffer[0];
+        if (pix != 0) {
+            frameBuffer[offset] = paletteData[pix];
+        }
+        offset += offsetIncr;
+        buffer++;
+    }
+}
+
 void SpriteRenderer::drawLine(int16_t xStart, int16_t yStart,
-                              int16_t xEnd, int16_t yEnd) {
+                              int16_t xEnd, int16_t yEnd, uint16_t color) {
     int16_t xDiff = xEnd - xStart;
     int16_t yDiff = yEnd - yStart;
     int16_t absX = abs(xDiff);
@@ -118,7 +147,7 @@ void SpriteRenderer::drawLine(int16_t xStart, int16_t yStart,
         int16_t d = (absY << 1) - absX;
         int16_t y = yStart;
         for (int16_t x = xStart;; x += incrementX) {
-            putPixel(x, y);
+            putPixel(x, y, color);
             if (x == xEnd) {
                 return;
             }
@@ -132,7 +161,7 @@ void SpriteRenderer::drawLine(int16_t xStart, int16_t yStart,
         int16_t d = (absX << 1) - absY;
         int16_t x = xStart;
         for (int16_t y = yStart;; y += incrementY) {
-            putPixel(x, y);
+            putPixel(x, y, color);
             if (y == yEnd) {
                 return;
             }
@@ -142,5 +171,62 @@ void SpriteRenderer::drawLine(int16_t xStart, int16_t yStart,
             }
             d += (absX << 1);
         }
+    }
+}
+
+void SpriteRenderer::renderFireEffect(const uint8_t* data,
+                                      const uint16_t* palette,
+                                      uint8_t width, uint8_t height,
+                                      uint8_t scale, uint8_t y) {
+    uint16_t sourceOffset = 0;
+    uint16_t destOffset = y * frameWidth;
+    for (uint8_t line = 0; line < height; ++line) {
+        for (uint8_t col = 0; col < width; ++col) {
+            uint16_t color = palette[data[sourceOffset]];
+            uint16_t crtDestOffset = destOffset;
+            for (uint8_t destLine = 0; destLine < scale; ++destLine) {
+                for (uint8_t destCol = 0; destCol < scale; ++destCol) {
+                    frameBuffer[crtDestOffset + destCol] = color;
+                }
+                crtDestOffset += frameWidth;
+            }
+            sourceOffset += 1;
+            destOffset += scale;
+        }
+        destOffset += frameWidth * (scale - 1);
+    }
+}
+
+void SpriteRenderer::reasonablyFastBlur() {
+    uint16_t offset = frameWidth + 1;
+    uint16_t value;
+    for (uint8_t line = 0; line < frameHeight - 2; ++line) {
+        for (uint8_t col = 0; col < frameWidth - 2; ++col) {
+            uint16_t totalR = 0;
+            uint16_t totalG = 0;
+            uint16_t totalB = 0;
+
+    // 1 0 1
+    // 1 2 1
+    // 1 0 1
+    #define ADD_FROM_OFFSET(offset, shift)              \
+        value = frameBuffer[offset];                    \
+        totalR += (Utils::getRLow(value) << shift);     \
+        totalG += (Utils::getGLow(value) << shift);     \
+        totalB += (Utils::getBLow(value) << shift);
+
+        ADD_FROM_OFFSET(offset - 1, 0);
+        ADD_FROM_OFFSET(offset, 1);
+        ADD_FROM_OFFSET(offset + 1, 0);
+        ADD_FROM_OFFSET(offset - frameWidth - 1, 0);
+        ADD_FROM_OFFSET(offset - frameWidth + 1, 0);
+        ADD_FROM_OFFSET(offset + frameWidth - 1, 0);
+        ADD_FROM_OFFSET(offset + frameWidth + 1, 0);
+        frameBuffer[offset++] = Utils::make16BitColorLow(totalR >> 3,
+                                                         totalG >> 3,
+                                                         totalB >> 3);
+    #undef ADD_FROM_OFFSET
+        }
+        offset += 2;
     }
 }

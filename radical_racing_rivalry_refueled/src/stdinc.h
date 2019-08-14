@@ -9,6 +9,5 @@
 #include <stddef.h>
 #include "lib/TinyScreenCompact.h"
 #include "lib/TinyArcade.h"
-#include "controls.h"
 
 #endif  // STDINC_H_

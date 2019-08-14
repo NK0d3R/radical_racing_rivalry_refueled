@@ -1,6 +1,7 @@
 // Copyright 2018 Catalin G. Manciu
 
 #include "defs.h"
+#include "game.h"
 #include "engine/renderer.h"
 #include "res/stringmgr.h"
 #include "res/sprites.h"
@@ -14,7 +15,7 @@ const FP32 Defs::IdleRPMModif(16.0f);     // 16000 rot /s = 16 rot / msec
 
 void Utils::fastGetDigits(uint16_t value, char* dest, uint16_t nbDigits) {
     int16_t maxVal = 1;
-    for (uint16_t p = 0; p < nbDigits; p ++) {
+    for (uint16_t p = 0; p < nbDigits; ++p) {
         maxVal *= 10;
     }
     maxVal--;
@@ -62,7 +63,7 @@ void Utils::formatDistance(int16_t distance, char* dest) {
 
 void Utils::drawBlinkingText(SpriteRenderer* renderer, Strings stringID,
                              uint8_t x, uint8_t y) {
-    if ((getFrameCounter() & 0xF) < 7) {
+    if ((RRRR::getInstance().getFrameCounter() & 0xF) < 7) {
         GetFont(Defs::FontMain)->drawString(renderer,
                                             getString(stringID),
                                             x, y, ANCHOR_TOP | ANCHOR_HCENTER);

@@ -7,7 +7,7 @@ def main():
                         description="Binary to C declaration converter")
     parser.add_argument("-i", "--input", help="Input file to process",
                         required=True)
-    parser.add_argument("-o", "--output", help="Output C file (no ext)",
+    parser.add_argument("-o", "--output", help="Output C file",
                         required=True)
     parser.add_argument("-m", "--maxvals", help="Max number of values per line",
                         type=int, default=16, required=False)
@@ -17,7 +17,7 @@ def main():
                         default="", required=False)
     options = parser.parse_args()
 
-    buffer_size = 2048
+    buffer_size = 1024 * 512
     file_size = 0
 
     try:
@@ -57,7 +57,7 @@ def main():
                             output.write("\n%s" % (tab_str))
                             needs_newline = False
                             needs_final_newline = False
-                        output.write("%s,"%
+                        output.write("%s," %
                                      format(ord(byte), "#04x"))
                         crt_line_byte += 1
                         if crt_line_byte == options.maxvals:
