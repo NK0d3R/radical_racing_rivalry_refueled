@@ -16,6 +16,20 @@ void StateSplash::stateInit() {
 
 void StateSplash::stateUpdate() {
     RRRR& g = RRRR::getInstance();
+
+    if (stateFrameCounter >= LogoLetterWaitFrames + LogoLetterFrames) {
+        uint8_t overlayX;
+        uint8_t overlayW;
+        if (stateFrameCounter < LogoLetterTotalFrames) {
+            overlayX = 10 + 10 * ((stateFrameCounter -
+                 (LogoLetterWaitFrames + LogoLetterFrames)) / LogoLetterFrames);
+            overlayW = 10;
+        } else {
+            overlayX = 10;
+            overlayW = 80;
+        }
+        fireEffect.addTempOverlay(overlayX, 52, overlayW, 4, 1);
+    }
     fireEffect.update();
     if ((g.oldButtonsState ^ g.buttonsState) & g.buttonsState) {
         g.setState(MainMenu);
@@ -28,10 +42,12 @@ void StateSplash::stateRender(SpriteRenderer* renderer) {
     GetSprite(Defs::SpriteMenu)->drawAnimationFrame(
                                     renderer, Defs::AnimMenuElements,
                                     Defs::MenuSplash, 0, 0, 0);
-    uint8_t frame = stateFrameCounter < 90 ? (stateFrameCounter - 10) / 10 : 8;
-    if (stateFrameCounter > 10) {
+    if (stateFrameCounter > LogoLetterWaitFrames) {
+        uint8_t frame = (stateFrameCounter < LogoLetterTotalFrames) ?
+                        (stateFrameCounter - LogoLetterWaitFrames) /
+                        LogoLetterFrames : Defs::MenuLogoLastFrame;
         GetSprite(Defs::SpriteMenu)->drawAnimationFrame(
                                         renderer, Defs::AnimLogo,
-                                        frame, 10, 45, 0);
+                                        frame, 4, 50, 0);
     }
 }

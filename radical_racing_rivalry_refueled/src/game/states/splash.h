@@ -5,11 +5,19 @@
 
 #include "basegamestate.h"
 #include "../../engine/fireeffect.h"
+#include "../../defs.h"
 
 class StateSplash : public BaseGameState {
  protected:
     static FireEffect fireEffect;
  private:
+    static constexpr uint8_t LogoLetterFrames = 10;
+    static constexpr uint8_t LogoLetterWaitFrames = 20;
+    static constexpr uint8_t LogoLetterTotalFrames =
+                                        LogoLetterWaitFrames +
+                                        (LogoLetterFrames *
+                                        (Defs::MenuLogoLastFrame + 1));
+
     virtual void stateInit();
     virtual void stateUpdate();
     virtual void stateRender(SpriteRenderer* renderer);

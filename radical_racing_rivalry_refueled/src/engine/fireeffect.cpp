@@ -19,7 +19,7 @@ void FireEffect::initialize(uint8_t scale, const uint16_t* pal,
     memcpy_P(palette, pal, paletteSize * sizeof(uint16_t));
 
     buffScale = scale;
-    generateBaseline();
+    generateBaseline(0, height - 1, width, baselineH);
 }
 
 void FireEffect::deleteBuffers() {
@@ -35,41 +35,52 @@ FireEffect::~FireEffect() {
     deleteBuffers();
 }
 
-void FireEffect::generateBaseline() {
-    uint16_t offset = width * (height - 1);
-    for (uint16_t line = 0; line < baselineH; ++line) {
-        memset(buffer + offset, (paletteSize - 1), width);
+// Starts from y, goes upward
+void FireEffect::generateBaseline(uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
+    uint16_t offset = width * y + x;
+    for (uint8_t line = 0; line < h; ++line) {
+        memset(buffer + offset, (paletteSize - 1), w);
         offset -= width;
     }
 }
 
-void FireEffect::process() {
-    uint16_t offset = height * width - 1;
+void FireEffect::process(uint8_t x, uint8_t y, uint8_t w) {
+    int16_t offset = width * y + x;
+    uint8_t totalH = (y + 1) - 2;
     uint32_t randomOffset = Utils::random32();
     uint8_t offsetBit = 0;
-    for (uint8_t line = 0; line < height - 2; ++line) {
-        for (uint8_t col = 0; col < width; ++col) {
+    int8_t increment = 1;
+    for (uint8_t line = 0; line < totalH; ++line) {
+        for (uint8_t col = 0; col < w; ++col) {
             int8_t value = ((randomOffset >> offsetBit) & 0x3);
-            if (value == 3) {
-                value = random(0, 3);
-            }
             int8_t newPix = buffer[offset] - value;
             if (newPix < 0) {
                 newPix = 0;
             }
-            buffer[offset - width + (value - 1)] = newPix;
+            if (value == 3) {
+                value = rand() % 3;
+            }
+            value -= 1;
+            buffer[offset - width + value] = newPix;
             offsetBit += 2;
             if (offsetBit > 31) {
                 randomOffset = Utils::random32();
                 offsetBit = 0;
             }
-            offset--;
+            offset += increment;
         }
+        increment *= -1;
+        offset -= (width + increment);
     }
 }
 
 void FireEffect::update() {
-    process();
+    process(0, height - 1, width);
+    if (tempOverlayTimer > 0) {
+        generateBaseline(tempX, tempY, tempW, tempH);
+        process(tempX, tempY, tempW);
+        tempOverlayTimer--;
+    }
 }
 
 void FireEffect::render(SpriteRenderer* renderer) {

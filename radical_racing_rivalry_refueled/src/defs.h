@@ -100,6 +100,11 @@ struct Defs {
         MenuSplash
     };
 
+    // AnimLogo frames
+    enum : uint8_t {
+        MenuLogoLastFrame = 8,
+    };
+
     // Menu actions
     enum : uint8_t {
         MenuActionStart = 1,
@@ -199,8 +204,8 @@ struct Utils {
     static void drawBlinkingText(SpriteRenderer* renderer, Strings stringID,
                                  uint8_t x, uint8_t y);
     static uint32_t random32() {
-        return ((static_cast<uint32_t>(random(65535)) << 16) |
-                 static_cast<uint32_t>(random(65535)));
+        return ((static_cast<uint32_t>(rand() & 0xFFFF) << 16) |
+                 static_cast<uint32_t>(rand() & 0xFFFF));
     }
 };
 

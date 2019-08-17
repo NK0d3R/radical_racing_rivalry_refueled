@@ -1,6 +1,7 @@
 // Copyright 2019 Catalin G. Manciu
 
 #include "game.h"
+#include "defs.h"
 #include "res/env_sprite.h"
 #include "res/car_sprite.h"
 #include "res/menu_sprite.h"
