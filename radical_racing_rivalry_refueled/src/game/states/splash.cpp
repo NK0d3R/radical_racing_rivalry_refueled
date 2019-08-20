@@ -16,7 +16,7 @@ void StateSplash::stateInit() {
 
 void StateSplash::stateUpdate() {
     RRRR& g = RRRR::getInstance();
-
+    fireEffect.update();
     if (stateFrameCounter >= LogoLetterWaitFrames + LogoLetterFrames) {
         uint8_t overlayX;
         uint8_t overlayW;
@@ -28,9 +28,8 @@ void StateSplash::stateUpdate() {
             overlayX = 10;
             overlayW = 80;
         }
-        fireEffect.addTempOverlay(overlayX, 52, overlayW, 4, 1);
+        fireEffect.addTempOverlay(overlayX, 52, overlayW, 8);
     }
-    fireEffect.update();
     if ((g.oldButtonsState ^ g.buttonsState) & g.buttonsState) {
         g.setState(MainMenu);
     }

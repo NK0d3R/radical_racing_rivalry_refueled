@@ -76,15 +76,20 @@ void FireEffect::process(uint8_t x, uint8_t y, uint8_t w) {
 
 void FireEffect::update() {
     process(0, height - 1, width);
-    if (tempOverlayTimer > 0) {
-        generateBaseline(tempX, tempY, tempW, tempH);
-        process(tempX, tempY, tempW);
-        tempOverlayTimer--;
-    }
 }
 
 void FireEffect::render(SpriteRenderer* renderer) {
     renderer->renderFireEffect(buffer, palette, width,
                                height - baselineH, buffScale,
                                buffScale * baselineH - 1);
+}
+
+void FireEffect::addTempOverlay(uint8_t x, uint8_t y,
+                                uint8_t w, uint8_t h) {
+    uint8_t tempX = x / buffScale;
+    uint8_t tempY = y / buffScale;
+    uint8_t tempW = w / buffScale;
+    uint8_t tempH = h / buffScale;
+    generateBaseline(tempX, tempY, tempW, tempH);
+    process(tempX, tempY, tempW);
 }

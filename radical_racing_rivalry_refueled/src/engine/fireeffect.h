@@ -15,11 +15,6 @@ class FireEffect {
     uint8_t  width;
     uint8_t  height;
     uint8_t  buffScale;
-    int8_t   tempOverlayTimer;
-    uint8_t  tempX;
-    uint8_t  tempY;
-    uint8_t  tempW;
-    uint8_t  tempH;
     const uint8_t baselineH = 1;
     void generateBaseline(uint8_t x, uint8_t y, uint8_t w, uint8_t h);
     void process(uint8_t x, uint8_t y, uint8_t w);
@@ -30,15 +25,7 @@ class FireEffect {
     void initialize(uint8_t scale, const uint16_t* pal, uint8_t palSize);
     void update();
     void render(SpriteRenderer* renderer);
-    void addTempOverlay(uint8_t x, uint8_t y,
-                        uint8_t w, uint8_t h,
-                        int8_t timer) {
-                             tempX = x / buffScale;
-                             tempY = y / buffScale;
-                             tempW = w / buffScale;
-                             tempH = h / buffScale;
-                             tempOverlayTimer = timer;
-                         }
+    void addTempOverlay(uint8_t x, uint8_t y, uint8_t w, uint8_t h);
 };
 
 #endif  // FIREEFFECT_H_
