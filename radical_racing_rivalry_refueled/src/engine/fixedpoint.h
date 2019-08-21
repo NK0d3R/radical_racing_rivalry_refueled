@@ -78,6 +78,7 @@ struct FPValue {
     BINARY_OP(-);
     BINARY_OP(/);
     BINARY_OP(*);
+#undef BINARY_OP
 
 #define BINARY_OP(op)                                               \
     friend FPValue operator op(FPValue lhs, T rhs) {                \
@@ -87,6 +88,7 @@ struct FPValue {
 
     BINARY_OP(*);
     BINARY_OP(/);
+#undef BINARY_OP
 
 #define COMPARISON_OP(op)                                           \
     friend bool operator op(const FPValue& lhs,                     \

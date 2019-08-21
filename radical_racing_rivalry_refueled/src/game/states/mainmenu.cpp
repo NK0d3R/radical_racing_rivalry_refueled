@@ -8,7 +8,7 @@
 void StateMainMenu::stateInit() {
     Menu& m = RRRR::getInstance().getMenu();
     Level& l = RRRR::getInstance().getLevel();
-    m.set(getMenuData(0), 3, 100, Defs::AnimMenuMain);
+    m.set(getMenuData(0), 3, 96, Defs::AnimMenuMain);
     m.setItemOption(0, l.getGameMode());
     m.setItemOption(1, l.getGearMode());
     m.restart();

@@ -3,7 +3,11 @@
 #ifndef CONTROLS_H_
 #define CONTROLS_H_
 
-#include "lib/TinyArcade.h"
+#if _WIN64
+    #include "tinycompatibility.h"
+#else
+    #include "lib/TinyArcade.h"
+#endif
 
 enum : uint8_t {
     BTN_A = TAButton1,

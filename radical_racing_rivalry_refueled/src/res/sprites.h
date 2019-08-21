@@ -7,8 +7,8 @@
 #include "../engine/ardusprite.h"
 #include "../defs.h"
 
-class Sprite;
-class Font;
+struct Sprite;
+struct Font;
 
 inline Sprite* GetSprite(int8_t idx) {
     static Sprite sprites[Defs::SpritesNb];

@@ -7,10 +7,13 @@ SRC_FOLDERS="$PROJECT_SRC_FOLDER
              $PROJECT_SRC_FOLDER/engine
              $PROJECT_SRC_FOLDER/game
              $PROJECT_SRC_FOLDER/game/states
-             $PROJECT_SRC_FOLDER/res"
+             $PROJECT_SRC_FOLDER/res
+             $PROJECT_SRC_FOLDER/../win64/RRRR"
+shopt -s nullglob
+shopt -s nocaseglob
 for srcdir in $SRC_FOLDERS; do
     echo "Checking folder $srcdir"
-    for filename in $srcdir/*; do
+    for filename in $srcdir/*.{c,cpp,h} ; do
         if [ -d "$filename" ]; then
             continue
         fi
@@ -36,4 +39,6 @@ for srcdir in $SRC_FOLDERS; do
         done
     done
 done
+shopt -u nocaseglob
+shopt -u nullglob
 echo Done

@@ -5,6 +5,10 @@
 
 #include "../stdinc.h"
 
+#if _WIN64
+    #pragma pack(push, 1)
+#endif
+
 #define INVALID_ANIM  (0xFF)
 #define INVALID_FRAME (0xFF)
 
@@ -39,25 +43,25 @@ struct SpriteElement {
     uint8_t     width;
     uint8_t     height;
     uint16_t    imageOffset;
-} __attribute__((__packed__));
+} PACKED;
 
 struct SpriteFrameElement {
     uint8_t     elementIdx;
     uint8_t     flags;
     int8_t      posX;
     int8_t      posY;
-} __attribute__((__packed__));
+} PACKED;
 
 struct SpriteAnimFrame {
     uint8_t   duration;
     uint8_t   elemsNb;
     uint8_t   frameElemsStart;
-}__attribute__((__packed__));
+} PACKED;
 
 struct SpriteAnim {
     uint8_t   framesNb;
     uint8_t   framesStart;
-}__attribute__((__packed__));
+} PACKED;
 
 struct Sprite {
     uint8_t   elemsNb;
@@ -78,7 +82,7 @@ struct Sprite {
     int32_t measureAnimationFrame(uint8_t animation, uint8_t frame);
     void create(const uint8_t* data);
     virtual ~Sprite() { if (paletteData) delete[] paletteData; }
-} __attribute__((__packed__));
+} PACKED;
 
 struct Font : public Sprite {
     const uint8_t*    mapping;
@@ -95,7 +99,7 @@ struct Font : public Sprite {
                     int16_t posX, int16_t posY,
                     uint8_t anchor, int8_t charSpacing = 0);
     uint16_t getStringWidth(const char* string, int8_t charSpacing);
-}__attribute__((__packed__));
+} PACKED;
 
 class SpriteAnimator {
     Sprite*      sprite;
@@ -114,7 +118,10 @@ class SpriteAnimator {
     bool update(uint16_t dt);
     void draw(SpriteRenderer* renderer, int16_t posX, int16_t posY);
     bool animPlaying() { return isPlaying; }
-}__attribute__((__packed__));
+} PACKED;
+
+#if _WIN64
+    #pragma pack(pop)
+#endif
 
 #endif  // ARDUSPRITE_H_
-

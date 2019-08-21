@@ -11,7 +11,7 @@
 #include "gameobject.h"
 
 class SpriteRenderer;
-class Sprite;
+struct Sprite;
 class Car;
 
 class Level {

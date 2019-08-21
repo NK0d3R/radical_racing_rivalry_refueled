@@ -55,8 +55,6 @@ void RRRR::update() {
     tinyScreen.beginFrame();
     currentState->update();
     currentState->render(&renderer);
-    tinyScreen.endFrame();
-
 #if SHOW_FPS
     static int32_t lastFrameTime = millis();
     static int16_t minFPS = 60;
@@ -69,7 +67,7 @@ void RRRR::update() {
         if (fps < minFPS) {
             minFPS = fps;
         }
-        Utils::fastGetDigits(1000 / uint16_t(fps), buff + 2, 3);
+        Utils::fastGetDigits(uint16_t(fps), buff + 2, 3);
         GetFont(Defs::FontMain)->drawString(&renderer, buff,
                                             Defs::ScreenW - 1, 1,
                                             ANCHOR_RIGHT | ANCHOR_TOP);
@@ -80,6 +78,8 @@ void RRRR::update() {
     }
     lastFrameTime = currentFrameTime;
 #endif
+    tinyScreen.endFrame();
+
     ++frameCounter;
 }
 

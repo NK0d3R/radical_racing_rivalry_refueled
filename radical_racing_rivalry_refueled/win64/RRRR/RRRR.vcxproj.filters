@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{0137b0ec-c833-4892-9333-9ce1a64f9e49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine">
+      <UniqueIdentifier>{97f718d3-9807-4802-8a1a-129eb6a604c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\game">
+      <UniqueIdentifier>{9465ad5e-6c72-4e21-8174-4cb9bebf956b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\game\states">
+      <UniqueIdentifier>{412aa8ef-1ac4-43c9-9765-b9ce46d275c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\lib">
+      <UniqueIdentifier>{99e2539e-35f4-4472-89bc-6325485a6a69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\res">
+      <UniqueIdentifier>{7693b3c4-f665-4e12-9e7f-e126c821d2e9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\engine\ardusprite.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\fireeffect.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\fixedpoint.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\primitives.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\renderer.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\game\car.h">
+      <Filter>src\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\game\enemycar.h">
+      <Filter>src\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\game\gameobject.h">
+      <Filter>src\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\game\gearshift.h">
+      <Filter>src\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\game\level.h">
+      <Filter>src\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\game\menu.h">
+      <Filter>src\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\game\states\aftergamemenu.h">
+      <Filter>src\game\states</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\game\states\basegamestate.h">
+      <Filter>src\game\states</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\game\states\ingame.h">
+      <Filter>src\game\states</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\game\states\mainmenu.h">
+      <Filter>src\game\states</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\game\states\splash.h">
+      <Filter>src\game\states</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\res\font.h">
+      <Filter>src\res</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\res\fontmap.h">
+      <Filter>src\res</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\res\menu_sprite.h">
+      <Filter>src\res</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\res\sprites.h">
+      <Filter>src\res</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\res\stringmgr.h">
+      <Filter>src\res</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\res\strings.h">
+      <Filter>src\res</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\res\strings.hpp">
+      <Filter>src\res</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\res\car_sprite.h">
+      <Filter>src\res</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\res\env_sprite.h">
+      <Filter>src\res</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\res\firepal.h">
+      <Filter>src\res</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\controls.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\defs.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\game.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\stdinc.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="tinycompatibility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="RRRR.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\ardusprite.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\fireeffect.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\primitives.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\renderer.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game\car.cpp">
+      <Filter>src\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game\enemycar.cpp">
+      <Filter>src\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game\gameobject.cpp">
+      <Filter>src\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game\gearshift.cpp">
+      <Filter>src\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game\level.cpp">
+      <Filter>src\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game\menu.cpp">
+      <Filter>src\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game\states\basegamestate.cpp">
+      <Filter>src\game\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game\states\ingame.cpp">
+      <Filter>src\game\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game\states\mainmenu.cpp">
+      <Filter>src\game\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game\states\splash.cpp">
+      <Filter>src\game\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game\states\aftergamemenu.cpp">
+      <Filter>src\game\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\res\stringmgr.cpp">
+      <Filter>src\res</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\defs.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="tinycompatibility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
