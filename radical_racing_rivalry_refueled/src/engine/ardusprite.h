@@ -35,10 +35,6 @@ inline constexpr uint8_t getBPPFromElementFlags(uint8_t value) {
     return ((value >> 3) & 0x3);
 }
 
-inline constexpr uint8_t getNoAlphaFromElementFlags(uint8_t value) {
-    return ((value >> 2) & 0x1);
-}
-
 struct SpriteElement {
     uint8_t     width;
     uint8_t     height;

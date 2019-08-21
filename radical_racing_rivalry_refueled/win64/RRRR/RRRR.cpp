@@ -1,6 +1,5 @@
 // Copyright 2019 Catalin G. Manciu
 
-#include <iostream>
 #include "../../radical_racing_rivalry_refueled.ino"
 
 int main(int argc, char* argv[]) {

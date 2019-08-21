@@ -35,6 +35,9 @@ void SpriteRenderer::drawSpriteData(const uint8_t* spriteData,
         return;
     }
 
+    bool xFlipped = (flags & ARD_FLAGS_FLIP_X);
+    bool yFlipped = (flags & ARD_FLAGS_FLIP_Y);
+
     int16_t srcX = dataBounds.x - targetX;
     int16_t srcY = dataBounds.y - targetY;
 
@@ -42,22 +45,20 @@ void SpriteRenderer::drawSpriteData(const uint8_t* spriteData,
         return;
     }
 
-    bool xFlipped = (flags & ARD_FLAGS_FLIP_X);
-    bool yFlipped = (flags & ARD_FLAGS_FLIP_Y);
-    bool isOpaque = getNoAlphaFromElementFlags(flags);
     uint8_t bppMode = getBPPFromElementFlags(flags);
 
     int16_t currentOffset = dataBounds.x + (dataBounds.y * frameWidth);
     int16_t lineOffsetIncr = frameWidth;
-    uint8_t currentLine = 0;
 
     if (yFlipped) {
         currentOffset += (dataBounds.h - 1) * frameWidth;
         lineOffsetIncr = -frameWidth;
+        srcY = height - (srcY + dataBounds.h);
     }
 
     if (xFlipped) {
         currentOffset += (dataBounds.w - 1);
+        srcX = width - (srcX + dataBounds.w);
     }
 
     if (bppMode == 3) {
