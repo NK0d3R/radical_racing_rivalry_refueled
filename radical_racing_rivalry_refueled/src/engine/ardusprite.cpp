@@ -96,6 +96,15 @@ void Sprite::drawAnimationFrame(SpriteRenderer* renderer,
     }
 }
 
+void Sprite::fillSingleLine(SpriteRenderer* renderer, uint8_t element,
+                            uint8_t posX, uint8_t posY, uint8_t srcY) {
+    SpriteElement currentElem;
+    memcpy_P(&currentElem, &elements[element], sizeof(SpriteElement));
+    renderer->fillSingleLine(imageData + currentElem.imageOffset,
+                             paletteData, posX, posY, srcY, currentElem.width,
+                             sprFlags << 2);
+}
+
 int32_t Sprite::measureAnimationFrame(uint8_t animation, uint8_t frame) {
     SpriteAnim currentAnim;
     memcpy_P(&currentAnim, &anims[animation], sizeof(SpriteAnim));
@@ -133,6 +142,14 @@ int32_t Sprite::measureAnimationFrame(uint8_t animation, uint8_t frame) {
         }
     }
     return (width | (height << 16));
+}
+
+uint8_t Sprite::getElementW(uint8_t element) {
+    return pgm_read_byte(const_cast<uint8_t*>(&elements[element].width));
+}
+
+uint8_t Sprite::getElementH(uint8_t element) {
+    return pgm_read_byte(const_cast<uint8_t*>(&elements[element].height));
 }
 
 void SpriteAnimator::init(Sprite* animSprite) {

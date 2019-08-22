@@ -10,10 +10,11 @@
 
 Level::BackgroundLayer* Level::bgLayers[] = {
     new BackgroundSprite(25, 0, Defs::BackgroundSun, 0),
-    new BackgroundSprite(25, 190, Defs::BackgroundLayer1, 25),
-    new BackgroundSprite(25, 190, Defs::BackgroundLayer2, 100),
-    new BackgroundGrid(25, 40, 10, 135),
-    new BackgroundSprite(42, 240, Defs::BackgroundLayer3, 430)
+    new BackgroundSprite(25, 190, Defs::BackgroundLayer1, 10),
+    new BackgroundSprite(25, 190, Defs::BackgroundLayer2, 60),
+    new BackgroundGrid(25, 40, 8, 80),
+    new BackgroundLineScroll(41, 16, 210),
+    new BackgroundSprite(42, 240, Defs::BackgroundLayer3, 210)
 };
 
 int16_t Level::BackgroundLayer::camPosToOffset(const FP32& cameraPosition) {
@@ -21,11 +22,12 @@ int16_t Level::BackgroundLayer::camPosToOffset(const FP32& cameraPosition) {
     return -(Utils::metersToPixels(camPosScaled).getInt());
 }
 
+
 void Level::BackgroundGrid::drawSingleLine(SpriteRenderer* renderer,
                                            int16_t x, int16_t yTop,
                                            int16_t yBot) {
     FP32 lineX(x);
-    FP32 lineXBottom = lineX * FP32(3.25f);
+    FP32 lineXBottom = lineX * FP32(2.25f);
     Line current(lineX + Defs::FPHalfScrW, FP32(yTop),
                  lineXBottom + Defs::FPHalfScrW, FP32(yBot));
     renderer->getClip().clipLineX(&current);
@@ -77,6 +79,25 @@ void Level::BackgroundSprite::draw(SpriteRenderer* renderer,
             GetSprite(Defs::SpriteEnv)->drawAnimationFrame(
                                             renderer, Defs::AnimBackgrounds,
                                             frame, offset, yPos, 0);
+    }
+}
+
+
+void Level::BackgroundLineScroll::draw(SpriteRenderer* renderer,
+                                       const FP32& cameraPosition) {
+    int8_t height = GetSprite(Defs::SpriteEnv)->getElementH(element);
+    int8_t width = GetSprite(Defs::SpriteEnv)->getElementW(element);
+    int32_t factor = 1000;
+    int32_t factorInc = 35;
+    for (int8_t line = yPos; line < yPos + height; ++line) {
+        int32_t crtOffset = ((camPosToOffset(cameraPosition) * factor) / 1000)
+                              % width;
+        GetSprite(Defs::SpriteEnv)->fillSingleLine(renderer, element,
+                                                   crtOffset +
+                                                   Defs::ScreenW / 2, line,
+                                                   line - yPos);
+        factor += factorInc;
+        factorInc += 3;
     }
 }
 
@@ -162,7 +183,7 @@ Level::Level() {
 }
 
 void Level::restart() {
-    playerCar->reset(getGameMode() == Duel ? FP32(0.9f) : FP32(0.6f));
+    playerCar->reset(getGameMode() == Duel ? FP32(0.9f) : FP32(0.7f));
     if (getGameMode() == Duel) {
         enemyCar->reset(FP32(0.3f));
     }
@@ -558,7 +579,7 @@ void Level::updateCamera() {
             target = Defs::RaceLength;
         }
     }
-    target += FP32(1.5f);
+    target += FP32(0.7f);
     cameraPosition += target;
     cameraPosition /= 2;
 }

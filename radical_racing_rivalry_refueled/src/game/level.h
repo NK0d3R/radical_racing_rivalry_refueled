@@ -85,6 +85,18 @@ class Level {
                           const FP32& cameraPosition);
     };
 
+    class BackgroundLineScroll : public BackgroundLayer {
+        int8_t  yPos;
+        uint8_t element;
+     public:
+         BackgroundLineScroll(int8_t y, uint8_t element, int16_t factor) :
+                              BackgroundLayer(factor), yPos(y),
+                              element(element) {
+        }
+        virtual void draw(SpriteRenderer* renderer,
+                          const FP32& cameraPosition);
+    };
+
     class BackgroundBlur : public BackgroundLayer {
      public:
         BackgroundBlur() : BackgroundLayer(0) {

@@ -7,6 +7,8 @@
 #include "../defs.h"
 #include "ardusprite.h"
 
+#define ENABLE_NOALPHA_SUPPORT  (0)
+
 class SpriteRenderer {
  private:
     static uint8_t lineBuffer[LINE_BUFFER_CAPACITY];
@@ -25,17 +27,25 @@ class SpriteRenderer {
     void drawSpriteData(const uint8_t* spriteData, const uint16_t* paletteData,
                         int16_t targetX, int16_t targetY, uint8_t width,
                         uint8_t height, uint8_t flags);
-    void transferLineAlpha(uint8_t bpp,
-                           const uint8_t* spriteData,
-                           const uint16_t* paletteData,
-                           uint8_t srcX, uint8_t srcY, uint8_t width,
-                           uint8_t baseWidth, int16_t offset,
-                           int16_t offsetIncr);
-    void transferLine8Alpha(const uint8_t* spriteData,
-                            const uint16_t* paletteData,
-                            uint8_t srcX, uint8_t srcY, uint8_t width,
-                            uint8_t baseWidth, int16_t offset,
-                            int16_t offsetIncr);
+    void fillSingleLine(const uint8_t* spriteData,
+                        const uint16_t* paletteData,
+                        uint8_t targetX, uint8_t targetY,
+                        uint8_t srcY,
+                        uint8_t width, uint8_t flags);
+    template<bool alpha>
+    void transferLine(uint8_t bpp,
+                      const uint8_t* spriteData,
+                      const uint16_t* paletteData,
+                      uint8_t srcX, uint8_t srcY, uint8_t width,
+                      uint8_t baseWidth, int16_t offset,
+                      int16_t offsetIncr, bool refreshLineBuff);
+    template<bool alpha>
+    void transferLine8(uint8_t bpp,
+                       const uint8_t* spriteData,
+                       const uint16_t* paletteData,
+                       uint8_t srcX, uint8_t srcY, uint8_t width,
+                       uint8_t baseWidth, int16_t offset,
+                       int16_t offsetIncr, bool refreshLineBuff);
     void renderFireEffect(const uint8_t* data, const uint16_t* palette,
                           uint8_t width, uint8_t height, uint8_t scale,
                           uint8_t y);

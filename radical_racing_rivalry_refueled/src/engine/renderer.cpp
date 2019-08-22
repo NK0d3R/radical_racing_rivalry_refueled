@@ -22,6 +22,21 @@ void SpriteRenderer::fastDrawVerticalPattern(uint8_t pattern,
                                              uint8_t x, uint8_t y) {
 }
 
+uint8_t bppModes[] = { 1, 2, 4, 8 };
+
+#if ENABLE_NOALPHA_SUPPORT
+#define GET_TRANSF_FUNC()      bppMode == 3 ? (hasAlpha == true ?           \
+                                &SpriteRenderer::transferLine8<true> :      \
+                                &SpriteRenderer::transferLine8<false>) :    \
+                               (hasAlpha == true ?                          \
+                                &SpriteRenderer::transferLine<true> :       \
+                                &SpriteRenderer::transferLine<false>)
+#else
+#define GET_TRANSF_FUNC()      bppMode == 3 ?                               \
+                                &SpriteRenderer::transferLine8<true> :      \
+                                &SpriteRenderer::transferLine<true>
+#endif
+
 void SpriteRenderer::drawSpriteData(const uint8_t* spriteData,
                                     const uint16_t* paletteData,
                                     int16_t targetX, int16_t targetY,
@@ -46,6 +61,7 @@ void SpriteRenderer::drawSpriteData(const uint8_t* spriteData,
     }
 
     uint8_t bppMode = getBPPFromElementFlags(flags);
+    uint8_t hasAlpha = getHasAlphaFromElementFlags(flags);
 
     int16_t currentOffset = dataBounds.x + (dataBounds.y * frameWidth);
     int16_t lineOffsetIncr = frameWidth;
@@ -60,52 +76,85 @@ void SpriteRenderer::drawSpriteData(const uint8_t* spriteData,
         currentOffset += (dataBounds.w - 1);
         srcX = width - (srcX + dataBounds.w);
     }
+    auto func = GET_TRANSF_FUNC();
+    uint8_t bpp = bppModes[bppMode];
+    for (uint8_t currentLine = 0; currentLine < dataBounds.h;
+            ++currentLine) {
+        (this->*func)(bpp, spriteData, paletteData,
+                      static_cast<uint8_t>(srcX),
+                      static_cast<uint8_t>(srcY + currentLine),
+                      static_cast<uint8_t>(dataBounds.w),
+                      width,
+                      currentOffset, (xFlipped ? -1 : 1), true);
+        currentOffset += lineOffsetIncr;
+    }
 
-    if (bppMode == 3) {
-        for (uint8_t currentLine = 0; currentLine < dataBounds.h;
-             ++currentLine) {
-            transferLine8Alpha(spriteData, paletteData,
-                               static_cast<uint8_t>(srcX),
-                               static_cast<uint8_t>(srcY + currentLine),
-                               static_cast<uint8_t>(dataBounds.w),
-                               width,
-                               currentOffset, (xFlipped ? -1 : 1));
-            currentOffset += lineOffsetIncr;
-        }
-    } else {
-        static uint8_t modes[] = {1, 2, 4};
-        uint8_t bpp = modes[bppMode];
-        for (uint8_t currentLine = 0; currentLine < dataBounds.h;
-             ++currentLine) {
-            transferLineAlpha(bpp, spriteData, paletteData,
-                              static_cast<uint8_t>(srcX),
-                              static_cast<uint8_t>(srcY + currentLine),
-                              static_cast<uint8_t>(dataBounds.w),
-                              width,
-                              currentOffset, (xFlipped ? -1 : 1));
-            currentOffset += lineOffsetIncr;
-        }
+}
+
+void SpriteRenderer::fillSingleLine(const uint8_t* spriteData,
+                                    const uint16_t* paletteData,
+                                    uint8_t targetX, uint8_t targetY,
+                                    uint8_t srcY,
+                                    uint8_t width, uint8_t flags) {
+    uint8_t bppMode = getBPPFromElementFlags(flags);
+    uint8_t bpp = bppModes[bppMode];
+
+    auto func = GET_TRANSF_FUNC();
+
+    int16_t currentOffset = clip.x + (targetY * frameWidth);
+    uint8_t leftWidth = targetX - clip.x + 1;
+    uint8_t rightWidth = clip.w - leftWidth;
+    uint8_t leftPartial = leftWidth % width;
+    uint8_t rightPartial = rightWidth % width;
+    uint8_t totalIters = (leftWidth / width) + (rightWidth / width);
+
+    if (leftPartial != 0) {
+        (this->*func)(bpp, spriteData, paletteData,
+                      width - leftPartial, srcY, leftPartial, width,
+                      currentOffset, 1, true);
+        currentOffset += leftPartial;
+    }
+
+    int16_t moduleStride = (width * bpp + 7) / 8;
+    int16_t crtOffset = (srcY * moduleStride);
+    memcpy_P(lineBuffer, spriteData + crtOffset, moduleStride);
+
+    for (uint8_t iter = 0; iter < totalIters; ++iter) {
+        (this->*func)(bpp, spriteData, paletteData,
+                      0, srcY, width, width,
+                      currentOffset, 1, false);
+        currentOffset += width;
+    }
+
+    if (rightPartial != 0) {
+        (this->*func)(bpp, spriteData, paletteData,
+                      0, srcY, rightPartial, width,
+                      currentOffset, 1, true);
     }
 }
 
-void SpriteRenderer::transferLineAlpha(uint8_t bpp,
-                                       const uint8_t* spriteData,
-                                       const uint16_t* paletteData,
-                                       uint8_t srcX, uint8_t srcY,
-                                       uint8_t width, uint8_t baseWidth,
-                                       int16_t offset, int16_t offsetIncr) {
+template<bool alpha>
+void SpriteRenderer::transferLine(uint8_t bpp,
+                                  const uint8_t* spriteData,
+                                  const uint16_t* paletteData,
+                                  uint8_t srcX, uint8_t srcY,
+                                  uint8_t width, uint8_t baseWidth,
+                                  int16_t offset, int16_t offsetIncr,
+                                  bool refreshLineBuff) {
     uint16_t mask = (1 << static_cast<uint16_t>(bpp)) - 1;
     uint8_t m = mask;
     int16_t moduleStride = (baseWidth * bpp + 7) / 8;
     int16_t crtOffset = (srcY * moduleStride);
     uint8_t crtBit = (srcX * bpp) % 8;
     uint8_t* buffer = lineBuffer;
-    memcpy_P(buffer, spriteData + crtOffset, moduleStride);
+    if (refreshLineBuff) {
+        memcpy_P(buffer, spriteData + crtOffset, moduleStride);
+    }
     buffer += (srcX * bpp) / 8;
 
     for (uint8_t currentPix = 0; currentPix < width; ++currentPix) {
         uint8_t pix = ((buffer[0] >> crtBit) & m);
-        if (pix != 0) {
+        if (alpha && pix != 0) {
             frameBuffer[offset] = paletteData[pix];
         }
         offset += offsetIncr;
@@ -117,17 +166,22 @@ void SpriteRenderer::transferLineAlpha(uint8_t bpp,
     }
 }
 
-void SpriteRenderer::transferLine8Alpha(const uint8_t* spriteData,
-                                        const uint16_t* paletteData,
-                                        uint8_t srcX, uint8_t srcY,
-                                        uint8_t width, uint8_t baseWidth,
-                                        int16_t offset, int16_t offsetIncr) {
+template<bool alpha>
+void SpriteRenderer::transferLine8(uint8_t bpp,
+                                   const uint8_t* spriteData,
+                                   const uint16_t* paletteData,
+                                   uint8_t srcX, uint8_t srcY,
+                                   uint8_t width, uint8_t baseWidth,
+                                   int16_t offset, int16_t offsetIncr,
+                                   bool refreshLineBuff) {
     int16_t crtOffset = (srcY * baseWidth) + srcX;
     uint8_t* buffer = lineBuffer;
-    memcpy_P(buffer, spriteData + crtOffset, baseWidth - srcX);
+    if (refreshLineBuff) {
+        memcpy_P(buffer, spriteData + crtOffset, baseWidth - srcX);
+    }
     for (uint8_t currentPix = 0; currentPix < width; ++currentPix) {
         uint8_t pix = buffer[0];
-        if (pix != 0) {
+        if (alpha && pix != 0) {
             frameBuffer[offset] = paletteData[pix];
         }
         offset += offsetIncr;

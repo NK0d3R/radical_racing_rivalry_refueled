@@ -35,6 +35,10 @@ inline constexpr uint8_t getBPPFromElementFlags(uint8_t value) {
     return ((value >> 3) & 0x3);
 }
 
+inline constexpr uint8_t getHasAlphaFromElementFlags(uint8_t value) {
+    return ((value >> 2) & 0x1);
+}
+
 struct SpriteElement {
     uint8_t     width;
     uint8_t     height;
@@ -75,6 +79,10 @@ struct Sprite {
     void drawAnimationFrame(SpriteRenderer* renderer, uint8_t animation,
                             uint8_t frame, int16_t posX,
                             int16_t posY, uint8_t flags);
+    void fillSingleLine(SpriteRenderer* renderer, uint8_t element,
+                        uint8_t posX, uint8_t posY, uint8_t srcY);
+    uint8_t getElementW(uint8_t element);
+    uint8_t getElementH(uint8_t element);
     int32_t measureAnimationFrame(uint8_t animation, uint8_t frame);
     void create(const uint8_t* data);
     virtual ~Sprite() { if (paletteData) delete[] paletteData; }
