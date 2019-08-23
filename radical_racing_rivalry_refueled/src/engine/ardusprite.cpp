@@ -92,7 +92,8 @@ void Sprite::drawAnimationFrame(SpriteRenderer* renderer,
                                  paletteData,
                                  posX + elemPosX, posY + elemPosY,
                                  currentElem.width, currentElem.height,
-                                 elemFlags | (sprFlags << 2));
+                                 elemFlags |
+                                 (sprFlags << SpriteFlagsStartBit));
     }
 }
 
@@ -102,7 +103,7 @@ void Sprite::fillSingleLine(SpriteRenderer* renderer, uint8_t element,
     memcpy_P(&currentElem, &elements[element], sizeof(SpriteElement));
     renderer->fillSingleLine(imageData + currentElem.imageOffset,
                              paletteData, posX, posY, srcY, currentElem.width,
-                             sprFlags << 2);
+                             sprFlags << SpriteFlagsStartBit);
 }
 
 int32_t Sprite::measureAnimationFrame(uint8_t animation, uint8_t frame) {

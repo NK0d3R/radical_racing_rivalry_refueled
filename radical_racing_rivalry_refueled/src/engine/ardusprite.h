@@ -21,6 +21,7 @@
 
 #define ARD_FLAGS_FLIP_X    (1 << 0)
 #define ARD_FLAGS_FLIP_Y    (1 << 1)
+#define ARD_FLAGS_ADD       (1 << 2)
 
 #define GET_W_FROM_SIZE(sz) (uint16_t)(sz & 0xFFFF)
 #define GET_H_FROM_SIZE(sz) (uint16_t)((sz & 0xFFFF0000) >> 16)
@@ -31,12 +32,14 @@ inline constexpr uint8_t invertBits(uint8_t value, uint8_t mask) {
     return ((~value) & mask) | (value & (~mask));
 }
 
+constexpr uint8_t SpriteFlagsStartBit = 3;
+
 inline constexpr uint8_t getBPPFromElementFlags(uint8_t value) {
-    return ((value >> 3) & 0x3);
+    return ((value >> (SpriteFlagsStartBit + 1)) & 0x3);
 }
 
 inline constexpr uint8_t getHasAlphaFromElementFlags(uint8_t value) {
-    return ((value >> 2) & 0x1);
+    return ((value >> SpriteFlagsStartBit) & 0x1);
 }
 
 struct SpriteElement {

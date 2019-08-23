@@ -99,7 +99,9 @@ void Car::destroy() {
 
 void Car::draw(SpriteRenderer* renderer) {
     GetSprite(Defs::SpriteCar)->drawAnimationFrame(renderer, Defs::AnimCarBody,
-                                              0, screenX, screenY, 0);
+                                                   0, screenX, screenY, 0);
+    GetSprite(Defs::SpriteCar)->drawAnimationFrame(renderer, Defs::AnimCarBody,
+                                                   1, screenX, screenY, 0);
     wheels.draw(renderer, screenX - 34, screenY);
     wheels.draw(renderer, screenX - 10, screenY);
     if (reflection.animPlaying()) {

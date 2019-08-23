@@ -25,16 +25,18 @@ void SpriteRenderer::fastDrawVerticalPattern(uint8_t pattern,
 uint8_t bppModes[] = { 1, 2, 4, 8 };
 
 #if ENABLE_NOALPHA_SUPPORT
-#define GET_TRANSF_FUNC()      bppMode == 3 ? (hasAlpha == true ?           \
-                                &SpriteRenderer::transferLine8<true> :      \
-                                &SpriteRenderer::transferLine8<false>) :    \
-                               (hasAlpha == true ?                          \
-                                &SpriteRenderer::transferLine<true> :       \
-                                &SpriteRenderer::transferLine<false>)
+#define GET_TRANSF_FUNC(bpp8, alpha, add)                                  \
+                            ((bpp8) ? ((alpha) ?                           \
+                             &SpriteRenderer::transferLine8<true, add> :   \
+                             &SpriteRenderer::transferLine8<false, add>) : \
+                            ((alpha) ?                                     \
+                             &SpriteRenderer::transferLine<true, add> :    \
+                             &SpriteRenderer::transferLine<false, add>))
 #else
-#define GET_TRANSF_FUNC()      bppMode == 3 ?                               \
-                                &SpriteRenderer::transferLine8<true> :      \
-                                &SpriteRenderer::transferLine<true>
+#define GET_TRANSF_FUNC(bpp8, alpha, add)                                  \
+                            ((bpp8) ?                                      \
+                             &SpriteRenderer::transferLine8<true, add> :   \
+                             &SpriteRenderer::transferLine<true, add>)
 #endif
 
 void SpriteRenderer::drawSpriteData(const uint8_t* spriteData,
@@ -52,6 +54,7 @@ void SpriteRenderer::drawSpriteData(const uint8_t* spriteData,
 
     bool xFlipped = (flags & ARD_FLAGS_FLIP_X);
     bool yFlipped = (flags & ARD_FLAGS_FLIP_Y);
+    bool additiveBlend = (flags & ARD_FLAGS_ADD);
 
     int16_t srcX = dataBounds.x - targetX;
     int16_t srcY = dataBounds.y - targetY;
@@ -76,7 +79,9 @@ void SpriteRenderer::drawSpriteData(const uint8_t* spriteData,
         currentOffset += (dataBounds.w - 1);
         srcX = width - (srcX + dataBounds.w);
     }
-    auto func = GET_TRANSF_FUNC();
+    auto func = additiveBlend ?
+                GET_TRANSF_FUNC(bppMode == 3, hasAlpha == true, true):
+                GET_TRANSF_FUNC(bppMode == 3, hasAlpha == true, false);
     uint8_t bpp = bppModes[bppMode];
     for (uint8_t currentLine = 0; currentLine < dataBounds.h;
             ++currentLine) {
@@ -99,7 +104,7 @@ void SpriteRenderer::fillSingleLine(const uint8_t* spriteData,
     uint8_t bppMode = getBPPFromElementFlags(flags);
     uint8_t bpp = bppModes[bppMode];
 
-    auto func = GET_TRANSF_FUNC();
+    auto func = GET_TRANSF_FUNC(bppMode == 3, false, false);
 
     int16_t currentOffset = clip.x + (targetY * frameWidth);
     uint8_t leftWidth = targetX - clip.x + 1;
@@ -133,7 +138,7 @@ void SpriteRenderer::fillSingleLine(const uint8_t* spriteData,
     }
 }
 
-template<bool alpha>
+template<bool alpha, bool add>
 void SpriteRenderer::transferLine(uint8_t bpp,
                                   const uint8_t* spriteData,
                                   const uint16_t* paletteData,
@@ -154,8 +159,13 @@ void SpriteRenderer::transferLine(uint8_t bpp,
 
     for (uint8_t currentPix = 0; currentPix < width; ++currentPix) {
         uint8_t pix = ((buffer[0] >> crtBit) & m);
-        if (alpha && pix != 0) {
-            frameBuffer[offset] = paletteData[pix];
+        if (!alpha || pix != 0) {
+            if (!add) {
+                frameBuffer[offset] = paletteData[pix];
+            } else {
+                frameBuffer[offset] = addBlendAdd(frameBuffer[offset],
+                                                  paletteData[pix]);
+            }
         }
         offset += offsetIncr;
         crtBit += bpp;
@@ -166,7 +176,7 @@ void SpriteRenderer::transferLine(uint8_t bpp,
     }
 }
 
-template<bool alpha>
+template<bool alpha, bool add>
 void SpriteRenderer::transferLine8(uint8_t bpp,
                                    const uint8_t* spriteData,
                                    const uint16_t* paletteData,
@@ -181,8 +191,13 @@ void SpriteRenderer::transferLine8(uint8_t bpp,
     }
     for (uint8_t currentPix = 0; currentPix < width; ++currentPix) {
         uint8_t pix = buffer[0];
-        if (alpha && pix != 0) {
-            frameBuffer[offset] = paletteData[pix];
+        if (!alpha || pix != 0) {
+            if (!add) {
+                frameBuffer[offset] = paletteData[pix];
+            } else {
+                frameBuffer[offset] = addBlendAdd(frameBuffer[offset],
+                                                  paletteData[pix]);
+            }
         }
         offset += offsetIncr;
         buffer++;

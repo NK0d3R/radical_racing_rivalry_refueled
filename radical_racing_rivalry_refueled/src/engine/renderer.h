@@ -32,14 +32,14 @@ class SpriteRenderer {
                         uint8_t targetX, uint8_t targetY,
                         uint8_t srcY,
                         uint8_t width, uint8_t flags);
-    template<bool alpha>
+    template<bool alpha, bool add>
     void transferLine(uint8_t bpp,
                       const uint8_t* spriteData,
                       const uint16_t* paletteData,
                       uint8_t srcX, uint8_t srcY, uint8_t width,
                       uint8_t baseWidth, int16_t offset,
                       int16_t offsetIncr, bool refreshLineBuff);
-    template<bool alpha>
+    template<bool alpha, bool add>
     void transferLine8(uint8_t bpp,
                        const uint8_t* spriteData,
                        const uint16_t* paletteData,
@@ -51,5 +51,14 @@ class SpriteRenderer {
                           uint8_t y);
     void fastDrawVerticalPattern(uint8_t pattern, uint8_t x, uint8_t y);
     void reasonablyFastBlur();
+    uint16_t addBlendAdd(uint16_t one, uint16_t two) {
+        uint8_t totalR = Utils::upperClamp(
+                                Utils::getRLow(one) + Utils::getRLow(two), 31);
+        uint8_t totalG = Utils::upperClamp(
+                                Utils::getGLow(one) + Utils::getGLow(two), 63);
+        uint8_t totalB = Utils::upperClamp(
+                                Utils::getBLow(one) + Utils::getBLow(two), 31);
+        return Utils::make16BitColorLow(totalR, totalG, totalB);
+    }
 };
 #endif  // RENDERER_H_
