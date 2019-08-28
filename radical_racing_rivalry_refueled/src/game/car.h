@@ -34,7 +34,7 @@ class Car : public GameObject {
  protected:
     int8_t gear;
     int8_t lastReflectionPos;
-    int8_t overheatCounter;
+    uint8_t overheatCounter;
     FP32 engineRPM;
     FP32 wheelsRPM;
     FP32 speed;

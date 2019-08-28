@@ -7,7 +7,7 @@
 #include "../engine/renderer.h"
 
 // Torque (in Nm)
-constexpr int16_t kTorques[] PROGMEM = {
+constexpr int16_t kTorques[] = {
     226,                // 1000 RPM
     395,                // 2000 RPM
     452,                // 3000 RPM
@@ -18,15 +18,15 @@ constexpr int16_t kTorques[] PROGMEM = {
     580                 // 8000 RPM
 };
 
-constexpr uint8_t kNbTorques = (sizeof(kTorques)/sizeof(FP32));
+constexpr uint8_t kNbTorques = (sizeof(kTorques)/sizeof(int16_t));
 
-constexpr float kGearRatios[] = {
-    0.0f,
-    9.13f,
-    6.65f,
-    4.43f,
-    3.51f,
-    2.89f
+constexpr FP32 kGearRatios[] = {
+    FP32(0.0f),
+    FP32(9.13f),
+    FP32(6.65f),
+    FP32(4.43f),
+    FP32(3.51f),
+    FP32(2.89f)
 };
 
 constexpr FP32 kWheelCircumference(2.0f * 3.141539f * 0.303f);
@@ -44,7 +44,7 @@ FP32 RPM2Torque(FP32 rpm) {
     rpm.clampLower(Defs::MinRPM);
     int16_t rpmI = rpm.getInt();
     int16_t idx = (rpmI / 1000);
-    FP32 crtTorque((int16_t)pgm_read_word(&kTorques[idx]));
+    FP32 crtTorque(kTorques[idx]);
     if (idx == (kNbTorques - 1)) {
         return crtTorque;
     }
@@ -52,12 +52,12 @@ FP32 RPM2Torque(FP32 rpm) {
     if (rpmOver == 0) {
         return crtTorque;
     }
-    FP32 endTorque((int16_t)pgm_read_word(&kTorques[idx + 1]));
+    FP32 endTorque(kTorques[idx + 1]);
     return crtTorque + (((endTorque - crtTorque) * rpmOver) / 1000);
 }
 
 FP32 getGearRatio(int16_t idx) {
-    return FP32(kGearRatios[idx]);
+    return kGearRatios[idx];
 }
 
 void Car::CarLight::update() {
@@ -192,13 +192,13 @@ void Car::updateEngine(int16_t dt) {
         if (engineRPM > Defs::MaxRPM) {
             destroy();
         } else {
-            int16_t engineRPMi = engineRPM.getInt();
-            uint8_t baseOverheat = 1 + (gear >> 1);
+            uint16_t engineRPMi = engineRPM.getInt();
+            uint16_t baseOverheat = 1 + (gear >> 1);
             uint8_t oldOverheat = overheatCounter;
             if (throttle > 0 && engineRPMi >= Defs::OverheatRPM) {
-                uint8_t overheatIncrease = baseOverheat +
-                                        (engineRPMi - Defs::OverheatRPM) /
-                                        Defs::OverheatDiv;
+                uint16_t overheatIncrease = baseOverheat +
+                                            (engineRPMi - Defs::OverheatRPM) /
+                                            Defs::OverheatDiv;
                 overheatCounter += overheatIncrease;
                 if (overheatCounter > Defs::MaxOverheat) {
                     destroy();
@@ -211,7 +211,7 @@ void Car::updateEngine(int16_t dt) {
                     if (overheatCounter >= (coolingSpeed + 1)) {
                         overheatCounter -= coolingSpeed;
                     } else {
-                        overheatCounter = 1;  // don't go to 0 while RPM is hi
+                        overheatCounter = 1;  // > 0 while RPM > overheat
                     }
                 }
             }
@@ -231,7 +231,7 @@ void Car::updateWheelsAnim(int16_t dt) {
 }
 
 void Car::updateReflectionAnim(int16_t dt) {
-    int8_t crtReflectionPos = xPos.getInt() / 250;
+    int8_t crtReflectionPos = xPos.getInt() / 256;
     if (lastReflectionPos != crtReflectionPos) {
         reflection.setAnimation(Defs::AnimCarReflection, 0, false);
         lastReflectionPos = crtReflectionPos;
