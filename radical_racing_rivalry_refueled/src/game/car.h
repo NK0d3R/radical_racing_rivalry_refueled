@@ -8,14 +8,13 @@
 #include "gameobject.h"
 #include "../res/sprites.h"
 #include "../engine/ardusprite.h"
+#include <stdio.h>
 
 class SpriteRenderer;
 class Level;
 class Car : public GameObject {
  public:
-    Car(Level* p, uint8_t scrW) :
-        GameObject(p, scrW) {
-    }
+    Car(Level* p, uint8_t scrW);
     virtual void reset(const FP32& z);
     virtual void draw(SpriteRenderer* renderer);
     virtual void update(int16_t dt);
@@ -42,14 +41,103 @@ class Car : public GameObject {
     FP32 throttle;
     bool clutch;
     bool alive;
+    bool carStarted;
     SpriteAnimator reflection;
     SpriteAnimator wheels;
     SpriteAnimator explosion;
     inline void updateEngine(int16_t dt);
     inline void updateWheelsAnim(int16_t dt);
     inline void updateReflectionAnim(int16_t dt);
+    inline void onCarStart();
+    inline void onEngineBlown();
+    inline void onOverheatChanged(uint8_t oldValue, uint8_t newValue);
+    template<typename F>
+    void foreachCarLight(F func,
+                         uint8_t start = 0, uint8_t end = NbCarLights) {
+        for (uint8_t light = start; light < end; ++light) {
+            func(carLights[light]);
+        }
+    }
     bool engineIsConnected() { return gear > 0 && clutch == false && alive; }
+
+    class CarLight {
+     public:
+         enum State : uint8_t {
+             Inactive,
+             Off,
+             On,
+             Blinking,
+             Blinking_Out
+         };
+         explicit CarLight(uint8_t frame) : frame(frame), state(Off) {}
+         virtual void reset() {
+             state = Off;
+         }
+         virtual void onCarStart() {
+             state = On;
+         }
+         virtual void onOverheatChanged(uint8_t oldValue, uint8_t newValue) {
+         }
+         virtual void onEngineBlown() {
+             blinkTimeout = 30 + (rand() & 7);
+             blinkRate = 6;
+             frameCounter = 0;
+             state = Blinking_Out;
+         }
+         virtual void update();
+         virtual void draw(SpriteRenderer* renderer, int16_t x, int16_t y);
+
+     protected:
+         State state;
+         uint8_t frame;
+         uint8_t blinkRate;
+         uint8_t blinkTimeout;
+         uint8_t frameCounter;
+    };
+
+    class NeonLight : public CarLight {
+     public:
+        explicit NeonLight(uint8_t frame) : CarLight(frame) {}
+        virtual void reset() {
+            state = On;
+        }
+    };
+
+    class AlertLight : public CarLight {
+     public:
+        explicit AlertLight(uint8_t frame) : CarLight(frame) {}
+        virtual void reset() {
+            state = Off;
+        }
+        virtual void onOverheatChanged(uint8_t oldValue, uint8_t newValue) {
+            if (state != Inactive) {
+                if (newValue == 0) {
+                    state = Off;
+                } else {
+                    if (state != Blinking) {
+                        frameCounter = 0;
+                        state = Blinking;
+                    }
+                    if (newValue < Defs::MaxOverheat / 2) {
+                        blinkRate = 8;
+                    } else {
+                        blinkRate = 4;
+                    }
+                }
+            }
+        }
+        virtual void onEngineBlown() {
+            state = Inactive;
+        }
+        virtual void onCarStart() {
+        }
+    };
+
+    static constexpr uint8_t NbCarLights = 3;
+    static constexpr uint8_t NbBgCarLights = 1;
+    CarLight* carLights[NbCarLights];
 };
+
 
 #endif  // CAR_H_
 

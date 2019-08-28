@@ -60,6 +60,34 @@ FP32 getGearRatio(int16_t idx) {
     return FP32(kGearRatios[idx]);
 }
 
+void Car::CarLight::update() {
+    if (state == Blinking_Out) {
+        blinkTimeout -= 1;
+        if (blinkTimeout == 0) {
+            state = Off;
+        }
+    }
+    if (state == Blinking_Out || state == Blinking) {
+        ++frameCounter;
+    }
+}
+
+void Car::CarLight::draw(SpriteRenderer* renderer, int16_t x, int16_t y) {
+    if (state == On || ((state == Blinking || state == Blinking_Out) &&
+        (frameCounter % blinkRate) < blinkRate / 2)) {
+        GetSprite(Defs::SpriteCar)->drawAnimationFrame(renderer,
+                                                       Defs::AnimCarBody,
+                                                       frame,
+                                                       x, y, 0);
+    }
+}
+
+Car::Car(Level* p, uint8_t scrW) : GameObject(p, scrW) {
+    carLights[0] = new NeonLight(1);
+    carLights[1] = new CarLight(2);
+    carLights[2] = new AlertLight(3);
+}
+
 void Car::reset(const FP32& z) {
     xPos = 0;
     zPos = z;
@@ -71,13 +99,14 @@ void Car::reset(const FP32& z) {
     throttle = 0;
     overheatCounter = 0;
     clutch = false;
+    carStarted = false;
     alive = true;
     lastReflectionPos = 0;
-
     wheels.init(GetSprite(Defs::SpriteCar));
     reflection.init(GetSprite(Defs::SpriteCar));
     explosion.init(GetSprite(Defs::SpriteCar));
     wheels.setAnimation(Defs::AnimCarWheels, 0, true);
+    foreachCarLight([](CarLight* light) { light->reset(); });
 }
 
 void Car::shiftGear(bool up) {
@@ -94,16 +123,21 @@ void Car::shiftGear(bool up) {
 
 void Car::destroy() {
      alive = false;
-     explosion.setAnimation(Defs::AnimCarExplosion, 0, false);
+     onEngineBlown();
 }
 
 void Car::draw(SpriteRenderer* renderer) {
+    foreachCarLight(
+        [&](CarLight* light) { light->draw(renderer, screenX, screenY); },
+         0, NbBgCarLights);
     GetSprite(Defs::SpriteCar)->drawAnimationFrame(renderer, Defs::AnimCarBody,
                                                    0, screenX, screenY, 0);
-    GetSprite(Defs::SpriteCar)->drawAnimationFrame(renderer, Defs::AnimCarBody,
-                                                   1, screenX, screenY, 0);
     wheels.draw(renderer, screenX - 34, screenY);
     wheels.draw(renderer, screenX - 10, screenY);
+    foreachCarLight(
+        [&](CarLight* light) { light->draw(renderer, screenX, screenY); },
+        NbBgCarLights);
+
     if (reflection.animPlaying()) {
         reflection.draw(renderer, screenX, screenY);
     }
@@ -160,6 +194,7 @@ void Car::updateEngine(int16_t dt) {
         } else {
             int16_t engineRPMi = engineRPM.getInt();
             uint8_t baseOverheat = 1 + (gear >> 1);
+            uint8_t oldOverheat = overheatCounter;
             if (throttle > 0 && engineRPMi >= Defs::OverheatRPM) {
                 uint8_t overheatIncrease = baseOverheat +
                                         (engineRPMi - Defs::OverheatRPM) /
@@ -176,9 +211,12 @@ void Car::updateEngine(int16_t dt) {
                     if (overheatCounter >= (coolingSpeed + 1)) {
                         overheatCounter -= coolingSpeed;
                     } else {
-                        overheatCounter = 1;  // don't go to 0 while RPM is high
+                        overheatCounter = 1;  // don't go to 0 while RPM is hi
                     }
                 }
+            }
+            if (oldOverheat != overheatCounter) {
+                onOverheatChanged(oldOverheat, overheatCounter);
             }
         }
     }
@@ -187,8 +225,8 @@ void Car::updateEngine(int16_t dt) {
 }
 
 void Car::updateWheelsAnim(int16_t dt) {
-    int16_t newDT = ((wheelsRPM * (int32_t)dt) / 125).getInt();
-    newDT = Utils::upperClamp(newDT, static_cast<int16_t>(200));
+    int16_t newDT = ((wheelsRPM * (int32_t)dt) / 150).getInt();
+    newDT = Utils::upperClamp(newDT, static_cast<int16_t>(120));
     wheels.update(newDT);
 }
 
@@ -202,8 +240,28 @@ void Car::updateReflectionAnim(int16_t dt) {
 }
 
 void Car::update(int16_t dt) {
+    if (!carStarted && (clutch || throttle > 0)) {
+        carStarted = true;
+        onCarStart();
+    }
     updateEngine(dt);
     updateWheelsAnim(dt);
     updateReflectionAnim(dt);
+    foreachCarLight([](CarLight* light) { light->update(); });
     explosion.update(dt);
+}
+
+void Car::onCarStart() {
+    foreachCarLight([](CarLight* light) { light->onCarStart(); });
+}
+
+void Car::onEngineBlown() {
+    foreachCarLight([](CarLight* light) { light->onEngineBlown(); });
+    explosion.setAnimation(Defs::AnimCarExplosion, 0, false);
+}
+
+void Car::onOverheatChanged(uint8_t oldValue, uint8_t newValue) {
+    foreachCarLight([&](CarLight* light) {
+                                light->onOverheatChanged(oldValue,
+                                                            newValue); });
 }

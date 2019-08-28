@@ -93,7 +93,6 @@ void SpriteRenderer::drawSpriteData(const uint8_t* spriteData,
                       currentOffset, (xFlipped ? -1 : 1), true);
         currentOffset += lineOffsetIncr;
     }
-
 }
 
 void SpriteRenderer::fillSingleLine(const uint8_t* spriteData,

@@ -88,7 +88,6 @@ void Level::BackgroundLineScroll::draw(SpriteRenderer* renderer,
     int8_t height = GetSprite(Defs::SpriteEnv)->getElementH(element);
     int8_t width = GetSprite(Defs::SpriteEnv)->getElementW(element);
     int32_t factor = 1000;
-    int32_t factorInc = 35;
     int32_t camPosOffset = camPosToOffset(cameraPosition);
     for (int8_t line = yPos; line < yPos + height; ++line) {
         int32_t crtOffset = ((camPosOffset* factor) / 1000) % width;
@@ -96,8 +95,7 @@ void Level::BackgroundLineScroll::draw(SpriteRenderer* renderer,
                                                    crtOffset +
                                                    Defs::ScreenW / 2, line,
                                                    line - yPos);
-        factor += factorInc;
-        factorInc += 3;
+        factor += 50;
     }
 }
 

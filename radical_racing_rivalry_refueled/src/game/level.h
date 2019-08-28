@@ -59,7 +59,7 @@ class Level {
         int8_t yTop;
         int8_t yBot;
         int8_t density;
-        const uint16_t color = Utils::make16BitColor(0xFF, 0x00, 0xFF);
+        const uint16_t color = Utils::make16BitColor(0xDF, 0x00, 0xFF);
         void drawSingleLine(SpriteRenderer* renderer, int16_t x,
                             int16_t yTop, int16_t yBot);
      public:
