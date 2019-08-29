@@ -55,19 +55,18 @@ struct Defs {
         AnimCarWheels,
         AnimCarReflection,
         AnimCarExplosion,
+        AnimCarExplosion_Sm,
         AnimCarRPMHud,
         AnimCarSpeedFont,
         AnimCarGearsAuto,
         AnimCarGearsManual,
         AnimCarCountdown,
-        AnimCarFlag
     };
 
     // AnimCarRPMHud frames
     enum : uint8_t {
         HUDFrameRPM = 0,
         HUDFrameRPMBar,
-        HUDFrameKPH,
         HUDFrameWarning,
         HUDFrameWarningOver
     };
@@ -117,9 +116,9 @@ struct Defs {
     static constexpr int16_t BgChopperMaxWaitTime = 5000;
     static constexpr int16_t BgChopperDecisionTime = 1500;
 
-    static constexpr uint8_t RPMBarLength = 32;
-    static constexpr uint8_t CarSpeedFontW = 5;
-    static constexpr uint8_t WarningSignH = 9;
+    static constexpr uint8_t RPMBarLength = 30;
+    static constexpr uint8_t CarSpeedFontW = 4;
+    static constexpr uint8_t WarningSignH = 7;
 
     static constexpr uint8_t MainFontHeight = 7;
     static constexpr uint8_t MainFontSpaceW = 4;

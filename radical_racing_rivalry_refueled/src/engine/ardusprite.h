@@ -125,6 +125,7 @@ class SpriteAnimator {
     bool update(uint16_t dt);
     void draw(SpriteRenderer* renderer, int16_t posX, int16_t posY);
     bool animPlaying() { return isPlaying; }
+    uint8_t getCurrentFrame() { return currentAnimFrame; }
 } PACKED;
 
 #if _WIN64

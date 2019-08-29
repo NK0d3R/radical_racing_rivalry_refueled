@@ -167,28 +167,21 @@ void Car::updateEngine(int16_t dt) {
 
     wheelsRPM = (speed * 60) / kWheelCircumference;
 
-    if (engineConnected) {
-        engineRPM = getGearRatio(gear) * wheelsRPM;
-        engineTorque = RPM2Torque(engineRPM.getInt());
-        forwardForce = (throttle * engineTorque * getGearRatio(gear)) /
-                        kWheelRadius;
-    } else {
-        if (throttle > FP32(0)) {
-            engineRPM += (throttle * Defs::IdleRPMModif) * dt;
-        } else {
-            engineRPM -= Defs::IdleRPMModif * dt;
-        }
-        engineRPM.clamp(Defs::MinRPM, Defs::MaxRPM);
-    }
-
-    forwardForce += kWindResistanceConst +
-                     (speed * speed * kWindResistanceMult) /
-                     kWindResistanceDiv;
-    FP32 accel = forwardForce / kVehicleMass;
-    speed += (accel * fpDT) / 1000;
-    speed.clampLower(FP32(0));
-
     if (alive) {
+        if (engineConnected) {
+            engineRPM = getGearRatio(gear) * wheelsRPM;
+            engineTorque = RPM2Torque(engineRPM.getInt());
+            forwardForce = (throttle * engineTorque * getGearRatio(gear)) /
+                            kWheelRadius;
+        } else {
+            if (throttle > FP32(0)) {
+                engineRPM += (throttle * Defs::IdleRPMModif) * dt;
+            } else {
+                engineRPM -= Defs::IdleRPMModif * dt;
+            }
+            engineRPM.clamp(Defs::MinRPM, Defs::MaxRPM);
+        }
+
         if (engineRPM > Defs::MaxRPM) {
             destroy();
         } else {
@@ -220,6 +213,13 @@ void Car::updateEngine(int16_t dt) {
             }
         }
     }
+    forwardForce += kWindResistanceConst +
+                     (speed * speed * kWindResistanceMult) /
+                     kWindResistanceDiv;
+
+    FP32 accel = forwardForce / kVehicleMass;
+    speed += (accel * fpDT) / 1000;
+    speed.clampLower(FP32(0));
 
     xPos += (speed * fpDT) / 1000;
 }

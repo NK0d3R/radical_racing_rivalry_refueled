@@ -79,8 +79,8 @@ class Car : public GameObject {
          virtual void onOverheatChanged(uint8_t oldValue, uint8_t newValue) {
          }
          virtual void onEngineBlown() {
-             blinkTimeout = 30 + (rand() & 7);
-             blinkRate = 6;
+             blinkTimeout = 40 + (rand() & 0xF);
+             blinkRate = 5 + (rand() & 0x3);
              frameCounter = 0;
              state = Blinking_Out;
          }
