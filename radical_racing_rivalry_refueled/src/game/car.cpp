@@ -76,16 +76,18 @@ void Car::CarLight::draw(SpriteRenderer* renderer, int16_t x, int16_t y) {
     if (state == On || ((state == Blinking || state == Blinking_Out) &&
         (frameCounter % blinkRate) < blinkRate / 2)) {
         GetSprite(Defs::SpriteCar)->drawAnimationFrame(renderer,
-                                                       Defs::AnimCarBody,
+                                                       anim,
                                                        frame,
                                                        x, y, 0);
     }
 }
 
 Car::Car(Level* p, uint8_t scrW) : GameObject(p, scrW) {
-    carLights[0] = new NeonLight(1);
-    carLights[1] = new CarLight(2);
-    carLights[2] = new AlertLight(3);
+    carLights[0] = new NeonLight(Defs::AnimCarNeon, 0);
+    carLights[1] = new CarLight(Defs::AnimCarLights,
+                                Defs::LightFrameHeadlights);
+    carLights[2] = new AlertLight(Defs::AnimCarLights,
+                                  Defs::LightFrameAlert);
 }
 
 void Car::reset(const FP32& z) {
@@ -130,10 +132,12 @@ void Car::draw(SpriteRenderer* renderer) {
     foreachCarLight(
         [&](CarLight* light) { light->draw(renderer, screenX, screenY); },
          0, NbBgCarLights);
-    GetSprite(Defs::SpriteCar)->drawAnimationFrame(renderer, Defs::AnimCarBody,
-                                                   0, screenX, screenY, 0);
-    wheels.draw(renderer, screenX - 34, screenY);
-    wheels.draw(renderer, screenX - 10, screenY);
+    GetSprite(Defs::SpriteCar)->drawAnimationFrame(renderer,
+                                                   Defs::AnimCarChassis,
+                                                   chassisIdx,
+                                                   screenX, screenY, 0);
+    wheels.draw(renderer, screenX - 35, screenY);
+    wheels.draw(renderer, screenX - 11, screenY);
     foreachCarLight(
         [&](CarLight* light) { light->draw(renderer, screenX, screenY); },
         NbBgCarLights);
@@ -262,6 +266,13 @@ void Car::onEngineBlown() {
 
 void Car::onOverheatChanged(uint8_t oldValue, uint8_t newValue) {
     foreachCarLight([&](CarLight* light) {
-                                light->onOverheatChanged(oldValue,
-                                                            newValue); });
+                                light->onOverheatChanged(oldValue, newValue);
+                    });
+}
+
+void Car::setChassis(uint8_t chassis) {
+    chassisIdx = chassis;
+    foreachCarLight([&](CarLight* light) {
+                                light->onSetChassis(chassis);
+                    });
 }

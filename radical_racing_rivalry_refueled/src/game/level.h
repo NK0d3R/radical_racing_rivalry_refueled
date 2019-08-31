@@ -27,16 +27,20 @@ class Level {
     void raceEnd();
     void setGearMode(uint8_t mode) {
         currentGearShift = mode == 0 ?
-                           static_cast<GearShift*>(&autoGearShift):
-                           static_cast<GearShift*>(&manualGearShift);
+            static_cast<GearShift*>(&autoGearShift) :
+            static_cast<GearShift*>(&manualGearShift);
     }
     uint8_t getGearMode() {
         return currentGearShift == static_cast<GearShift*>(&autoGearShift) ?
-               0 : 1;
+            0 : 1;
     }
     void setGameMode(uint8_t gamemode) {
         mode = static_cast<GameMode>(gamemode);
     }
+    void setMainChassis(uint8_t chassis) { mainChassis = chassis; }
+    void setRivalChassis(uint8_t chassis) { rivalChassis = chassis; }
+    uint8_t getMainChassis() { return mainChassis; }
+
     uint8_t getGameMode() {
         return static_cast<uint8_t>(mode);
     }
@@ -149,8 +153,8 @@ class Level {
 
     enum ScreenAnimType : int8_t {
         None,
-        Sprite,
-        Flag
+        Screen_Sprite,
+        Screen_Flag
     };
 
     LevelState      state = Countdown;
@@ -169,6 +173,8 @@ class Level {
     int32_t         levelTimer;
     uint8_t         stateCounter;
     uint8_t         maxStateCounter;
+    uint8_t         mainChassis;
+    uint8_t         rivalChassis;
     bool            newRecord;
 
     static constexpr uint8_t kAccelButton = BTN_B;
@@ -187,6 +193,7 @@ class Level {
     inline void drawDistanceToRival(SpriteRenderer* renderer,
                                     uint8_t x, uint8_t y);
     void startScreenAnim(uint8_t x, uint8_t y, ScreenAnimType type,
+                         uint8_t sprite = Defs::SpriteHud,
                          uint8_t anim = 0, bool loop = false);
     template<typename F>
     void foreachGameObject(F func);

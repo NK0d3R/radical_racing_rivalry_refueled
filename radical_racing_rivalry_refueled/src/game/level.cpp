@@ -176,13 +176,14 @@ void Level::BackgroundBlur::draw(SpriteRenderer* renderer,
 Level::Level() {
     playerCar = new Car(this, 43);
     enemyCar = new EnemyCar(this, 43);
-    screenAnim.init(GetSprite(Defs::SpriteCar));
     state = Invalid;
 }
 
 void Level::restart() {
+    playerCar->setChassis(mainChassis);
     playerCar->reset(getGameMode() == Duel ? FP32(0.9f) : FP32(0.7f));
     if (getGameMode() == Duel) {
+        enemyCar->setChassis(rivalChassis);
         enemyCar->reset(FP32(0.3f));
     }
     levelTimer = 0;
@@ -194,11 +195,12 @@ void Level::restart() {
 }
 
 void Level::startScreenAnim(uint8_t x, uint8_t y, ScreenAnimType type,
-                            uint8_t anim, bool loop) {
+                            uint8_t sprite, uint8_t anim, bool loop) {
     scrAnimX = x;
     scrAnimY = y;
     screenAnimType = type;
-    if (type == Sprite) {
+    if (type == Screen_Sprite) {
+        screenAnim.init(GetSprite(sprite));
         screenAnim.setAnimation(anim, 0, loop);
     }
 }
@@ -208,14 +210,16 @@ void Level::setState(LevelState newState) {
         switch (newState) {
             case Countdown:
                 startScreenAnim(Defs::ScreenW / 2, Defs::ScreenH / 2,
-                                Sprite, Defs::AnimCarCountdown);
+                                Screen_Sprite, Defs::SpriteHud,
+                                Defs::AnimHUDCountdown);
                 cameraPosition = -200;
             break;
             case Result:
                 stateCounter = 0;
                 if (endResult < RaceEndLose) {
                     startScreenAnim(82, 64,
-                                    Sprite, Defs::AnimCarExplosion_Sm);
+                                    Screen_Sprite, Defs::SpriteCar,
+                                    Defs::AnimCarExplosion_Sm);
                     maxStateCounter = 120;
                 } else {
                     if (endResult != RaceEndLose) {
@@ -223,7 +227,7 @@ void Level::setState(LevelState newState) {
                     }
                     startScreenAnim((Defs::ScreenW - Defs::EndFlagW) / 2,
                                      Defs::ResultTextY - (Defs::EndFlagH / 2),
-                                     Flag);
+                                     Screen_Flag);
                     maxStateCounter = 240;
                 }
             break;
@@ -262,9 +266,10 @@ void Level::draw(SpriteRenderer* renderer) {
     }
 
     switch (screenAnimType) {
-        case Sprite: screenAnim.draw(renderer, scrAnimX, scrAnimY); break;
-        case Flag: drawEndFlag(renderer, scrAnimX, scrAnimY,
-                               Defs::EndFlagW); break;
+        case Screen_Sprite:
+            screenAnim.draw(renderer, scrAnimX, scrAnimY); break;
+        case Screen_Flag:
+            drawEndFlag(renderer, scrAnimX, scrAnimY, Defs::EndFlagW); break;
     }
 
     if (state == Result) {
@@ -275,26 +280,23 @@ void Level::draw(SpriteRenderer* renderer) {
 #define DEBUG_ENEMY_SPEED   (0)
 
 void Level::drawCarHUD(SpriteRenderer* renderer, uint8_t x, uint8_t y) {
+    Sprite* hud = GetSprite(Defs::SpriteHud);
 // Draw RPM Bar background
-    GetSprite(Defs::SpriteCar)->drawAnimationFrame(
-                                    renderer, Defs::AnimCarRPMHud,
-                                    Defs::HUDFrameRPM, x, y, 0);
+    hud->drawAnimationFrame(renderer, Defs::AnimHUDRPM,
+                            Defs::HUDFrameRPM, x, y, 0);
 // Draw speed
     static constexpr uint8_t kNbDigitsSpeed = 3;
     uint8_t crtX = x - 1;
     int32_t speed = Utils::mpsToKph(playerCar->getSpeed()).getInt();
     for (uint8_t digit = 0; digit < kNbDigitsSpeed; ++digit) {
-        GetSprite(Defs::SpriteCar)->drawAnimationFrame(
-                                        renderer, Defs::AnimCarSpeedFont,
-                                        (speed % 10),
-                                        crtX, y - 4, 0);
+        hud->drawAnimationFrame(renderer, Defs::AnimHUDSpeedFont,
+                                speed % 10, crtX, y - 4, 0);
         speed /= 10;
         crtX -= Defs::CarSpeedFontW;
     }
 // Draw gear
-    GetSprite(Defs::SpriteCar)->drawAnimationFrame(
-                                    renderer, Defs::AnimCarGearsAuto,
-                                    playerCar->getGear(), x - 8, y - 14, 0);
+    hud->drawAnimationFrame(renderer, Defs::AnimHUDGearsAuto,
+                            playerCar->getGear(), x - 8, y - 14, 0);
 
 // Draw overheat
     if (playerCar->getOverheat() > 0) {
@@ -302,25 +304,20 @@ void Level::drawCarHUD(SpriteRenderer* renderer, uint8_t x, uint8_t y) {
                               Defs::MaxOverheat;
         if (clipHeight > 0 ||
             (RRRR::getInstance().getFrameCounter() & 0xF) < 8) {
-            GetSprite(Defs::SpriteCar)->drawAnimationFrame(
-                                            renderer, Defs::AnimCarRPMHud,
-                                            Defs::HUDFrameWarning,
-                                            x, y, 0);
+            hud->drawAnimationFrame(renderer, Defs::AnimHUDRPM,
+                                    Defs::HUDFrameWarning, x, y, 0);
         }
         renderer->setClip(0, y - clipHeight - 10, Defs::ScreenW, clipHeight);
-        GetSprite(Defs::SpriteCar)->drawAnimationFrame(
-                                        renderer, Defs::AnimCarRPMHud,
-                                        Defs::HUDFrameWarningOver,
-                                        x, y, 0);
+        hud->drawAnimationFrame(renderer, Defs::AnimHUDRPM,
+                                Defs::HUDFrameWarningOver, x, y, 0);
     }
 // Draw RPM Bar
     uint8_t barLength = ((playerCar->getRPM() * Defs::RPMBarLength) /
                          Defs::MaxRPM).getInt();
     barLength = Utils::upperClamp(barLength, Defs::RPMBarLength);
     renderer->setClip(x - Defs::RPMBarLength - 1, 0, barLength, Defs::ScreenH);
-    GetSprite(Defs::SpriteCar)->drawAnimationFrame(
-                                    renderer, Defs::AnimCarRPMHud,
-                                    Defs::HUDFrameRPMBar, x, y, 0);
+    hud->drawAnimationFrame(renderer, Defs::AnimHUDRPM,
+                            Defs::HUDFrameRPMBar, x, y, 0);
 // Reset clip
     renderer->setClip(0, 0, Defs::ScreenW, Defs::ScreenH);
 }
@@ -497,7 +494,8 @@ void Level::updateState(int16_t dt) {
             }
         } break;
         case Result:
-            if (screenAnimType == Sprite && screenAnim.animPlaying() == false) {
+            if (screenAnimType == Screen_Sprite &&
+                screenAnim.animPlaying() == false) {
                 screenAnimType = None;
             }
             stateCounter++;
@@ -520,7 +518,7 @@ void Level::raceEnd() {
 }
 
 void Level::updateGeneral(int16_t dt) {
-    if (screenAnimType == Sprite) {
+    if (screenAnimType == Screen_Sprite) {
         screenAnim.update(dt);
     }
     foreachGameObject([&](GameObject* obj) { obj->update(dt); });

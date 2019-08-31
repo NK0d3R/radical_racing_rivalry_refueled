@@ -29,12 +29,14 @@ class Car : public GameObject {
     bool isAlive()                      { return alive; }
     int8_t getMaxGear()                 { return Defs::MaxGear; }
     void destroy();
-    int8_t getOverheat()               { return overheatCounter; }
+    int8_t getOverheat()                { return overheatCounter; }
+    void setChassis(uint8_t chassis);
 
  protected:
     int8_t gear;
     int8_t lastReflectionPos;
     uint8_t overheatCounter;
+    uint8_t chassisIdx;
     FP32 engineRPM;
     FP32 wheelsRPM;
     FP32 speed;
@@ -69,7 +71,8 @@ class Car : public GameObject {
              Blinking,
              Blinking_Out
          };
-         explicit CarLight(uint8_t frame) : frame(frame), state(Off) {}
+         explicit CarLight(uint8_t anim, uint8_t frame):
+                           anim(anim), frame(frame), state(Off) {}
          virtual void reset() {
              state = Off;
          }
@@ -78,6 +81,7 @@ class Car : public GameObject {
          }
          virtual void onOverheatChanged(uint8_t oldValue, uint8_t newValue) {
          }
+         virtual void onSetChassis(uint8_t chassis) {}
          virtual void onEngineBlown() {
              blinkTimeout = 40 + (rand() & 0xF);
              blinkRate = 5 + (rand() & 0x3);
@@ -90,6 +94,7 @@ class Car : public GameObject {
      protected:
          State state;
          uint8_t frame;
+         uint8_t anim;
          uint8_t blinkRate;
          uint8_t blinkTimeout;
          uint8_t frameCounter;
@@ -97,15 +102,20 @@ class Car : public GameObject {
 
     class NeonLight : public CarLight {
      public:
-        explicit NeonLight(uint8_t frame) : CarLight(frame) {}
+        explicit NeonLight(uint8_t anim, uint8_t frame) :
+                    CarLight(anim, frame) {}
         virtual void reset() {
             state = On;
+        }
+        virtual void onSetChassis(uint8_t chassis) {
+            frame = chassis;
         }
     };
 
     class AlertLight : public CarLight {
      public:
-        explicit AlertLight(uint8_t frame) : CarLight(frame) {}
+        explicit AlertLight(uint8_t anim, uint8_t frame) :
+                    CarLight(anim, frame) {}
         virtual void reset() {
             state = Off;
         }

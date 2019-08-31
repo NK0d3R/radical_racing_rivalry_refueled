@@ -8,9 +8,11 @@
 void StateMainMenu::stateInit() {
     Menu& m = RRRR::getInstance().getMenu();
     Level& l = RRRR::getInstance().getLevel();
-    m.set(getMenuData(0), 3, 96, Defs::AnimMenuMain);
+    m.set(getMenuData(0), 3, 96, Defs::AnimMenuMain, Defs::SpriteCar,
+          Defs::AnimCarMenu);
     m.setItemOption(0, l.getGameMode());
     m.setItemOption(1, l.getGearMode());
+    m.setItemOption(2, l.getMainChassis());
     m.restart();
 }
 
@@ -18,11 +20,16 @@ void StateMainMenu::stateUpdate() {
     RRRR& g = RRRR::getInstance();
     Menu& m = g.getMenu();
     Level& l = g.getLevel();
+    uint8_t changedButtons = (g.buttonsState ^ g.oldButtonsState);
     m.updateControls(g.buttonsState, g.oldButtonsState);
     fireEffect.update();
-    if (m.getAction() == Defs::MenuActionStart) {
+    if (changedButtons & g.buttonsState & BTN_B) {
+        uint8_t playerChassis = m.getItemOption(2);
         l.setGameMode(m.getItemOption(0));
         l.setGearMode(m.getItemOption(1));
+        l.setMainChassis(playerChassis);
+        l.setRivalChassis(Utils::random8Except(
+                          0, Defs::CarNbChassis, playerChassis));
         l.restart();
         g.setState(Ingame);
     }

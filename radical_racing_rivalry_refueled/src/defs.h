@@ -25,6 +25,7 @@ struct Defs {
     enum : uint8_t {
         SpriteEnv = 0,
         SpriteCar,
+        SpriteHud,
         SpriteMenu,
         SpritesNb
     };
@@ -51,16 +52,29 @@ struct Defs {
 
     // SpriteCar anims
     enum : uint8_t {
-        AnimCarBody = 0,
+        AnimCarChassis = 0,
         AnimCarWheels,
+        AnimCarNeon,
         AnimCarReflection,
+        AnimCarLights,
         AnimCarExplosion,
         AnimCarExplosion_Sm,
-        AnimCarRPMHud,
-        AnimCarSpeedFont,
-        AnimCarGearsAuto,
-        AnimCarGearsManual,
-        AnimCarCountdown,
+        AnimCarMenu,
+    };
+
+    // AnimCarLights frames
+    enum : uint8_t {
+        LightFrameHeadlights,
+        LightFrameAlert
+    };
+
+    // SpriteHud anims
+    enum : uint8_t {
+        AnimHUDRPM,
+        AnimHUDSpeedFont,
+        AnimHUDGearsAuto,
+        AnimHUDGearsManual,
+        AnimHUDCountdown,
     };
 
     // AnimCarRPMHud frames
@@ -110,6 +124,8 @@ struct Defs {
         MenuActionRestart,
         MenuActionBackToMM,
     };
+
+    static constexpr uint8_t CarNbChassis = 4;
 
     static constexpr int8_t BgChopperMarginOffset = 15;
     static constexpr int16_t BgChopperMinWaitTime = 3000;
@@ -205,6 +221,15 @@ struct Utils {
     static uint32_t random32() {
         return ((static_cast<uint32_t>(rand() & 0xFFFF) << 16) |
                  static_cast<uint32_t>(rand() & 0xFFFF));
+    }
+    static uint8_t random8Except(uint8_t min, uint8_t max,
+                                 uint8_t except = 0xFF) {
+        uint8_t range = max - min;
+        uint8_t value = min + ((rand() & 0xFF) % range);
+        if (except != 0xFF && value == except) {
+            value = (value + 1) % range;
+        }
+        return value;
     }
 };
 

@@ -4,6 +4,7 @@
 #include "defs.h"
 #include "res/env_sprite.h"
 #include "res/car_sprite.h"
+#include "res/hud_sprite.h"
 #include "res/menu_sprite.h"
 #include "res/font.h"
 #include "res/fontmap.h"
@@ -31,6 +32,7 @@ void RRRR::initialize(uint8_t fps) {
 
     GetSprite(Defs::SpriteEnv)->create(ENV_SPRITE_DATA);
     GetSprite(Defs::SpriteCar)->create(CAR_SPRITE_DATA);
+    GetSprite(Defs::SpriteHud)->create(HUD_SPRITE_DATA);
     GetSprite(Defs::SpriteMenu)->create(MENU_SPRITE_DATA);
     GetFont(Defs::FontMain)->create(FONT_DATA, mapping, nb_map_elems,
                                     Defs::MainFontSpaceW, Defs::MainFontHeight,

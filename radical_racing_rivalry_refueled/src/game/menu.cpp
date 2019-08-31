@@ -7,15 +7,6 @@
 #include "../engine/renderer.h"
 #include "../game.h"
 
-/*
- * Menu Data bits: [high] h h h h h i i i i f o o a a a [low]
- * a - action ID
- * o - number of selectable sub-options
- * f - sprite flag (if 1, item is sprite, if 0, item is text)
- * i - frame idx if sprite flag is 1, string idx if sprite flag is 0
- * h - height
- */
-
 void Menu::drawSpriteElementBackground(SpriteRenderer* renderer,
                                        int16_t x, int16_t y, int8_t height,
                                        bool hasArrows) {
@@ -54,10 +45,11 @@ void Menu::drawSpriteElementBackground(SpriteRenderer* renderer,
 
 void Menu::draw(SpriteRenderer* renderer, uint8_t x, uint8_t y) {
     for (uint8_t idx = 0; idx < nbItems; ++idx) {
-        uint16_t itemData = pgm_read_word(&menuData[idx]);
+        uint32_t itemData = pgm_read_dword(&menuData[idx]);
         uint8_t height = itemHeight(itemData);
         uint8_t visualID = itemVisualID(itemData);
         uint8_t itemOptionCnt = itemOptionCount(itemData);
+        uint8_t flags = itemSpriteFlag(itemData);
         if (itemOptionCnt) {
             visualID += getItemOption(idx);
         }
@@ -66,9 +58,15 @@ void Menu::draw(SpriteRenderer* renderer, uint8_t x, uint8_t y) {
             drawSpriteElementBackground(renderer, x, y, height,
                                         itemOptionCnt > 0);
         }
-        if (itemSpriteFlag(itemData) == 1) {
-            Sprite* spr = GetSprite(Defs::SpriteMenu);
-            spr->drawAnimationFrame(renderer, animation, visualID, x,
+        if (flags & FlagSprite) {
+            uint8_t sprite = Defs::SpriteMenu;
+            uint8_t anim = animation;
+            if (flags & FlagAltSprite) {
+                sprite = alternateSprite;
+                anim = alternateAnim;
+            }
+            Sprite* spr = GetSprite(sprite);
+            spr->drawAnimationFrame(renderer, anim, visualID, x,
                                     y, 0);
         } else {
             Font* font = GetFont(Defs::FontMain);
@@ -94,7 +92,7 @@ void Menu::updateControls(uint8_t buttonsState, uint8_t oldButtonsState) {
     if ((changedButtons & buttonsState & DPAD_RIGHT)) {
         onRight();
     }
-    if ((changedButtons & buttonsState & BTN_A)) {
+    if ((changedButtons & buttonsState & BTN_B)) {
         onConfirm();
     }
 }
@@ -139,20 +137,21 @@ void Menu::restart() {
     crtSelection = 0;
 }
 
-PROGMEM const uint16_t mainmenu[] = {
-    Menu::itemDataCreate(0, 1, 1, 0, 24),
-    Menu::itemDataCreate(0, 1, 1, 2, 18),
-    Menu::itemDataCreate(Defs::MenuActionStart, 0, 1, 4, 14)
+PROGMEM const uint32_t mainmenu[] = {
+    Menu::itemDataCreate(0, 1, Menu::FlagSprite, 0, 24),
+    Menu::itemDataCreate(0, 1, Menu::FlagSprite, 2, 18),
+    Menu::itemDataCreate(0, Defs::CarNbChassis - 1,
+                         Menu::FlagSprite | Menu::FlagAltSprite, 0, 14)
 };
 
-PROGMEM const uint16_t endracemenu[] = {
+PROGMEM const uint32_t endracemenu[] = {
     Menu::itemDataCreate(Defs::MenuActionRestart, 0, 0,
                          Strings::Igm_Restart, 16),
     Menu::itemDataCreate(Defs::MenuActionBackToMM, 0, 0,
                          Strings::Igm_BackToMM, 16)
 };
 
-const uint16_t* getMenuData(uint8_t menu) {
-    static const uint16_t* menus[] = { mainmenu, endracemenu };
+const uint32_t* getMenuData(uint8_t menu) {
+    static const uint32_t* menus[] = { mainmenu, endracemenu };
     return menus[menu];
 }

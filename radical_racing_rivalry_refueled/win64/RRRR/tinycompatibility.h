@@ -20,6 +20,7 @@
 
 #define pgm_read_byte(x) *(x)
 #define pgm_read_word(x) *(x)
+#define pgm_read_dword(x) *(x)
 #define PROGMEM
 #define memcpy_P memcpy
 

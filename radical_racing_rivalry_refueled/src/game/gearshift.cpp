@@ -25,16 +25,16 @@ void GearShiftAuto::update() {
 
 void GearShiftAuto::draw(SpriteRenderer* renderer, int16_t x, int16_t y) {
     uint8_t arrowOffset = (RRRR::getInstance().getFrameCounter() >> 1) & 0x3;
-    Sprite* car = GetSprite(Defs::SpriteCar);
-    car->drawAnimationFrame(renderer, Defs::AnimCarGearsAuto,
+    Sprite* hud = GetSprite(Defs::SpriteHud);
+    hud->drawAnimationFrame(renderer, Defs::AnimHUDGearsAuto,
                             Defs::HUDGearsManualBg, x, y, 0);
     if (currentGear < Defs::MaxGear) {
-        car->drawAnimationFrame(renderer, Defs::AnimCarGearsAuto,
+        hud->drawAnimationFrame(renderer, Defs::AnimHUDGearsAuto,
                                 Defs::HUDGearsManualUp, x,
                                 y - arrowOffset, 0);
     }
     if (currentGear > 0) {
-        car->drawAnimationFrame(renderer, Defs::AnimCarGearsAuto,
+        hud->drawAnimationFrame(renderer, Defs::AnimHUDGearsAuto,
                                 Defs::HUDGearsManualDown, x,
                                 y + arrowOffset, 0);
     }
@@ -43,16 +43,16 @@ void GearShiftAuto::draw(SpriteRenderer* renderer, int16_t x, int16_t y) {
     if (state != Idle) {
         y = y + (static_cast<int16_t>(state)) * scrollAmount;
     }
-    car->drawAnimationFrame(renderer, Defs::AnimCarGearsAuto,
+    hud->drawAnimationFrame(renderer, Defs::AnimHUDGearsAuto,
                             currentGear, x, y, 0);
     if (state != Idle) {
         if (currentGear < Defs::MaxGear) {
-            car->drawAnimationFrame(renderer, Defs::AnimCarGearsAuto,
+            hud->drawAnimationFrame(renderer, Defs::AnimHUDGearsAuto,
                                     currentGear + 1,
                                     x, y - GearDisplH, 0);
         }
         if (currentGear > 0) {
-            car->drawAnimationFrame(renderer, Defs::AnimCarGearsAuto,
+            hud->drawAnimationFrame(renderer, Defs::AnimHUDGearsAuto,
                                     currentGear - 1,
                                     x, y + GearDisplH, 0);
         }
@@ -136,8 +136,8 @@ void GearShiftManual::update() {
 }
 
 void GearShiftManual::draw(SpriteRenderer* renderer, int16_t x, int16_t y) {
-    Sprite* car = GetSprite(Defs::SpriteCar);
-    car->drawAnimationFrame(renderer, Defs::AnimCarGearsManual,
+    Sprite* hud = GetSprite(Defs::SpriteHud);
+    hud->drawAnimationFrame(renderer, Defs::AnimHUDGearsManual,
                             Defs::HUDGearsAutoBg, x, y, 0);
     int16_t xPos = x + (currentX - 1) * StickHStep;
     int16_t yPos = y + (currentY - 1) * StickVStep;
@@ -147,6 +147,6 @@ void GearShiftManual::draw(SpriteRenderer* renderer, int16_t x, int16_t y) {
         case Up:    yPos -= currentOffset; break;
         case Down:  yPos += currentOffset; break;
     }
-    car->drawAnimationFrame(renderer, Defs::AnimCarGearsManual,
+    hud->drawAnimationFrame(renderer, Defs::AnimHUDGearsManual,
                             Defs::HUDGearsAutoStick, xPos, yPos, 0);
 }
