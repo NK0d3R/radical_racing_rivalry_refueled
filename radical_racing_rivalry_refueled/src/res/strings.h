@@ -18,6 +18,8 @@ enum Strings : uint8_t {
     Title_3,
     Copyleft,
     PressToCont,
+    No_Save1,
+    No_Save2,
     StringsNb
 };
 

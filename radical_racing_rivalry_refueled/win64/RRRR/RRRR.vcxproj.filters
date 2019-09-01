@@ -126,6 +126,18 @@
     <ClInclude Include="tinycompatibility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\filesystem.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\filesystem_tiny.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\filesystem_win.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\game\states\saveerror.h">
+      <Filter>src\game\states</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RRRR.cpp">
@@ -187,6 +199,12 @@
     </ClCompile>
     <ClCompile Include="tinycompatibility.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\filesystem.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game\states\saveerror.cpp">
+      <Filter>src\game\states</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -17,7 +17,8 @@ enum GameState : uint8_t {
     Splash,
     MainMenu,
     Ingame,
-    AfterGameMenu
+    AfterGameMenu,
+    SaveError
 };
 
 class RRRR {
@@ -36,13 +37,27 @@ class RRRR {
                                           (static_cast<uint32_t>('K') << 16) |
                                           (static_cast<uint32_t>('D') << 8)  |
                                           saveVersion;
+#if _WIN64
+    static constexpr const char* saveFileName = "profile.bin";
+#else
+    static constexpr const char* saveFileName = "RRRR/profile.bin";
+#endif
+    struct Profile {
+        uint32_t signature;
+        int32_t bestTimes[4];
+        uint32_t nbDuelWins;
+        uint8_t lastSelectedChassis;
+    };
+    bool profileNeedsSave;
+    bool savingEnabled;
+    Profile p;
 
  public:
     uint8_t             buttonsState;
     uint8_t             oldButtonsState;
     uint32_t            frameCounter;
 
-    RRRR() : currentState(nullptr), pendingState(nullptr) {}
+    RRRR();
 
     Menu& getMenu()     { return menu; }
     Level& getLevel()   { return level; }
@@ -54,7 +69,9 @@ class RRRR {
     void saveLoad();
     void saveSave();
     int32_t getTimeRecord(uint8_t gameMode, uint8_t gearMode);
-    void updateTimeRecord(uint8_t gameMode, uint8_t gearMode, int32_t newValue);
+    void updateTimeRecord(uint8_t gameMode, uint8_t gearMode,
+                          int32_t newValue);
+    void increaseDuelWins();
     void setState(GameState newState);
     static RRRR& getInstance();
 };

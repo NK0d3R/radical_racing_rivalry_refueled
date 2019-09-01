@@ -224,6 +224,10 @@ void Level::setState(LevelState newState) {
                 } else {
                     if (endResult != RaceEndLose) {
                         checkRecord();
+                        if (getGameMode() == Duel) {
+                            RRRR::getInstance().increaseDuelWins();
+                        }
+                        RRRR::getInstance().saveSave();
                     }
                     startScreenAnim((Defs::ScreenW - Defs::EndFlagW) / 2,
                                      Defs::ResultTextY - (Defs::EndFlagH / 2),
