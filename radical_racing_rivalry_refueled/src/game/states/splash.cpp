@@ -15,7 +15,7 @@ void StateSplash::stateInit() {
 }
 
 void StateSplash::stateUpdate() {
-    RRRR& g = RRRR::getInstance();
+    R3R& g = R3R::getInstance();
     fireEffect.update();
     if (stateFrameCounter >= LogoLetterWaitFrames + LogoLetterFrames) {
         uint8_t overlayX;
@@ -36,7 +36,7 @@ void StateSplash::stateUpdate() {
 }
 
 void StateSplash::stateRender(SpriteRenderer* renderer) {
-    RRRR& g = RRRR::getInstance();
+    R3R& g = R3R::getInstance();
     fireEffect.render(renderer);
     GetSprite(Defs::SpriteMenu)->drawAnimationFrame(
                                     renderer, Defs::AnimMenuElements,

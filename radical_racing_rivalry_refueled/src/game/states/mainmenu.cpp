@@ -6,8 +6,8 @@
 #include "../../res/sprites.h"
 
 void StateMainMenu::stateInit() {
-    Menu& m = RRRR::getInstance().getMenu();
-    Level& l = RRRR::getInstance().getLevel();
+    Menu& m = R3R::getInstance().getMenu();
+    Level& l = R3R::getInstance().getLevel();
     m.set(getMenuData(0), 3, 96, Defs::AnimMenuMain, Defs::SpriteCar,
           Defs::AnimCarMenu);
     m.setItemOption(0, l.getGameMode());
@@ -17,7 +17,7 @@ void StateMainMenu::stateInit() {
 }
 
 void StateMainMenu::stateUpdate() {
-    RRRR& g = RRRR::getInstance();
+    R3R& g = R3R::getInstance();
     Menu& m = g.getMenu();
     Level& l = g.getLevel();
     uint8_t changedButtons = (g.buttonsState ^ g.oldButtonsState);
@@ -36,7 +36,7 @@ void StateMainMenu::stateUpdate() {
 }
 
 void StateMainMenu::stateRender(SpriteRenderer* renderer) {
-    RRRR& g = RRRR::getInstance();
+    R3R& g = R3R::getInstance();
     Menu& m = g.getMenu();
     fireEffect.render(renderer);
     m.draw(renderer, (Defs::ScreenW >> 1), 0);

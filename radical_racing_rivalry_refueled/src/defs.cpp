@@ -63,7 +63,7 @@ void Utils::formatDistance(int16_t distance, char* dest) {
 
 void Utils::drawBlinkingText(SpriteRenderer* renderer, Strings stringID,
                              uint8_t x, uint8_t y) {
-    if ((RRRR::getInstance().getFrameCounter() & 0xF) < 7) {
+    if ((R3R::getInstance().getFrameCounter() & 0xF) < 7) {
         GetFont(Defs::FontMain)->drawString(renderer,
                                             getString(stringID),
                                             x, y, ANCHOR_TOP | ANCHOR_HCENTER);

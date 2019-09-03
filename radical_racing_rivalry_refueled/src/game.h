@@ -21,7 +21,7 @@ enum GameState : uint8_t {
     SaveError
 };
 
-class RRRR {
+class R3R {
  private:
     SpriteRenderer      renderer;
     TinyScreenCompact   tinyScreen;
@@ -40,7 +40,7 @@ class RRRR {
 #if _WIN64
     static constexpr const char* saveFileName = "profile.bin";
 #else
-    static constexpr const char* saveFileName = "RRRR/profile.bin";
+    static constexpr const char* saveFileName = "R3R/profile.bin";
 #endif
     struct Profile {
         uint32_t signature;
@@ -57,7 +57,7 @@ class RRRR {
     uint8_t             oldButtonsState;
     uint32_t            frameCounter;
 
-    RRRR();
+    R3R();
 
     Menu& getMenu()     { return menu; }
     Level& getLevel()   { return level; }
@@ -73,7 +73,7 @@ class RRRR {
                           int32_t newValue);
     void increaseDuelWins();
     void setState(GameState newState);
-    static RRRR& getInstance();
+    static R3R& getInstance();
 };
 
 #endif  // GAME_H_

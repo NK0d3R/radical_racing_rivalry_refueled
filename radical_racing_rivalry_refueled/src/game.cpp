@@ -17,8 +17,8 @@
 #include "game/states/aftergamemenu.h"
 #include "game/states/saveerror.h"
 
-RRRR::RRRR(): currentState(nullptr), pendingState(nullptr) {
-    p = { RRRR::signature,
+R3R::R3R(): currentState(nullptr), pendingState(nullptr) {
+    p = { R3R::signature,
           60000,
           70000,
           -20,
@@ -28,7 +28,7 @@ RRRR::RRRR(): currentState(nullptr), pendingState(nullptr) {
         };
 }
 
-void RRRR::initialize(uint8_t fps) {
+void R3R::initialize(uint8_t fps) {
     tinyScreen.start();
     arcadeInit();
 
@@ -60,7 +60,7 @@ void RRRR::initialize(uint8_t fps) {
     }
 }
 
-void RRRR::update() {
+void R3R::update() {
     if (!nextFrame()) {
         return;
     }
@@ -105,7 +105,7 @@ void RRRR::update() {
     ++frameCounter;
 }
 
-bool RRRR::nextFrame() {
+bool R3R::nextFrame() {
     static int32_t lastFrameTime = 0;
     int32_t currentTime = millis();
     if (currentTime - lastFrameTime < waitTimeMillis) {
@@ -115,31 +115,31 @@ bool RRRR::nextFrame() {
     return true;
 }
 
-int32_t RRRR::getTimeRecord(uint8_t gameMode, uint8_t gearMode) {
+int32_t R3R::getTimeRecord(uint8_t gameMode, uint8_t gearMode) {
     return p.bestTimes[(gameMode << 1) + gearMode];
 }
 
-void RRRR::updateTimeRecord(uint8_t gameMode, uint8_t gearMode,
+void R3R::updateTimeRecord(uint8_t gameMode, uint8_t gearMode,
                             int32_t newValue) {
     p.bestTimes[(gameMode << 1) + gearMode] = newValue;
     profileNeedsSave = true;
 }
 
-void RRRR::increaseDuelWins() {
+void R3R::increaseDuelWins() {
     if (p.nbDuelWins < 9999999) {
         p.nbDuelWins++;
         profileNeedsSave = true;
     }
 }
 
-void RRRR::saveSave() {
+void R3R::saveSave() {
     if (savingEnabled && profileNeedsSave) {
         save(saveFileName, &p, sizeof(p));
         profileNeedsSave = false;
     }
 }
 
-void RRRR::saveLoad() {
+void R3R::saveLoad() {
     if (savingEnabled) {
         Profile temp;
         if (load(saveFileName, &temp, sizeof(temp)) == false ||
@@ -152,7 +152,7 @@ void RRRR::saveLoad() {
     }
 }
 
-void RRRR::setState(GameState newState) {
+void R3R::setState(GameState newState) {
     static BaseGameState invalid;
     static StateSplash splash;
     static StateMainMenu mainmenu;
@@ -172,8 +172,8 @@ void RRRR::setState(GameState newState) {
     }
 }
 
-static RRRR instance;
+static R3R instance;
 
-RRRR& RRRR::getInstance() {
+R3R& R3R::getInstance() {
     return instance;
 }

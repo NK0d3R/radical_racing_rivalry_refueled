@@ -4,13 +4,13 @@
 #include "../../game.h"
 
 void StateAfterGameMenu::stateInit() {
-    Menu& m = RRRR::getInstance().getMenu();
+    Menu& m = R3R::getInstance().getMenu();
     m.set(getMenuData(1), 2, 80, 0);
     m.restart();
 }
 
 void StateAfterGameMenu::stateUpdate() {
-    RRRR& g = RRRR::getInstance();
+    R3R& g = R3R::getInstance();
     Menu& m = g.getMenu();
     Level& l = g.getLevel();
     m.updateControls(g.buttonsState, g.oldButtonsState);
@@ -26,5 +26,5 @@ void StateAfterGameMenu::stateUpdate() {
 }
 
 void StateAfterGameMenu::stateRender(SpriteRenderer* renderer) {
-    RRRR::getInstance().getMenu().draw(renderer, (Defs::ScreenW >> 1), 16);
+    R3R::getInstance().getMenu().draw(renderer, (Defs::ScreenW >> 1), 16);
 }

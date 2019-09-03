@@ -225,9 +225,9 @@ void Level::setState(LevelState newState) {
                     if (endResult != RaceEndLose) {
                         checkRecord();
                         if (getGameMode() == Duel) {
-                            RRRR::getInstance().increaseDuelWins();
+                            R3R::getInstance().increaseDuelWins();
                         }
-                        RRRR::getInstance().saveSave();
+                        R3R::getInstance().saveSave();
                     }
                     startScreenAnim((Defs::ScreenW - Defs::EndFlagW) / 2,
                                      Defs::ResultTextY - (Defs::EndFlagH / 2),
@@ -307,7 +307,7 @@ void Level::drawCarHUD(SpriteRenderer* renderer, uint8_t x, uint8_t y) {
         uint8_t clipHeight = (playerCar->getOverheat() * Defs::WarningSignH) /
                               Defs::MaxOverheat;
         if (clipHeight > 0 ||
-            (RRRR::getInstance().getFrameCounter() & 0xF) < 8) {
+            (R3R::getInstance().getFrameCounter() & 0xF) < 8) {
             hud->drawAnimationFrame(renderer, Defs::AnimHUDRPM,
                                     Defs::HUDFrameWarning, x, y, 0);
         }
@@ -370,7 +370,7 @@ void Level::drawEndFlag(SpriteRenderer* renderer, uint8_t x,
     static PROGMEM const int8_t displ[] = {
         0, 0, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1
     };
-    uint8_t displIndex = (RRRR::getInstance().getFrameCounter() >> 1) %
+    uint8_t displIndex = (R3R::getInstance().getFrameCounter() >> 1) %
                             sizeof(displ);
     int8_t displY = 0;
     for (int8_t crtX = x; crtX < x + w; ++crtX) {
@@ -420,14 +420,14 @@ void Level::updateControls(uint8_t buttonsState, uint8_t oldButtonsState) {
 void Level::checkRecord() {
     uint8_t gearMode = getGearMode();
     uint8_t gameMode = getGameMode();
-    int32_t timeRecord = RRRR::getInstance().getTimeRecord(gameMode, gearMode);
+    int32_t timeRecord = R3R::getInstance().getTimeRecord(gameMode, gearMode);
 
     if (levelTimer < timeRecord) {
         newRecord = true;
     }
 
     if (newRecord) {
-        RRRR::getInstance().updateTimeRecord(gameMode, gearMode, levelTimer);
+        R3R::getInstance().updateTimeRecord(gameMode, gearMode, levelTimer);
     }
 }
 
@@ -504,7 +504,7 @@ void Level::updateState(int16_t dt) {
             }
             stateCounter++;
             if (stateCounter > maxStateCounter) {
-                RRRR::getInstance().setState(AfterGameMenu);
+                R3R::getInstance().setState(AfterGameMenu);
                 setState(Invalid);
             }
         break;

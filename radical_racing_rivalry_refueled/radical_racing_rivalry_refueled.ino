@@ -3,10 +3,10 @@
 #include "src/game.h"
 
 void setup() {
-    RRRR::getInstance().initialize(30);
+    R3R::getInstance().initialize(30);
 }
 
 void loop() {
-    RRRR::getInstance().update();
+    R3R::getInstance().update();
 }
 

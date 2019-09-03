@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{FF0B885D-66BD-4093-992C-AFD29D85518D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>RRRR</RootNamespace>
+    <RootNamespace>R3R</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -222,7 +222,7 @@
     <ClCompile Include="..\..\src\game\states\saveerror.cpp" />
     <ClCompile Include="..\..\src\game\states\splash.cpp" />
     <ClCompile Include="..\..\src\res\stringmgr.cpp" />
-    <ClCompile Include="RRRR.cpp" />
+    <ClCompile Include="R3R.cpp" />
     <ClCompile Include="tinycompatibility.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -24,7 +24,7 @@ void GearShiftAuto::update() {
 }
 
 void GearShiftAuto::draw(SpriteRenderer* renderer, int16_t x, int16_t y) {
-    uint8_t arrowOffset = (RRRR::getInstance().getFrameCounter() >> 1) & 0x3;
+    uint8_t arrowOffset = (R3R::getInstance().getFrameCounter() >> 1) & 0x3;
     Sprite* hud = GetSprite(Defs::SpriteHud);
     hud->drawAnimationFrame(renderer, Defs::AnimHUDGearsAuto,
                             Defs::HUDGearsManualBg, x, y, 0);
