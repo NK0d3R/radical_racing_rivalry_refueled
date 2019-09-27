@@ -185,6 +185,7 @@
     <ClInclude Include="..\..\src\game\states\aftergamemenu.h" />
     <ClInclude Include="..\..\src\game\states\basegamestate.h" />
     <ClInclude Include="..\..\src\game\states\ingame.h" />
+    <ClInclude Include="..\..\src\game\states\logo.h" />
     <ClInclude Include="..\..\src\game\states\mainmenu.h" />
     <ClInclude Include="..\..\src\game\states\saveerror.h" />
     <ClInclude Include="..\..\src\game\states\splash.h" />
@@ -218,6 +219,7 @@
     <ClCompile Include="..\..\src\game\states\aftergamemenu.cpp" />
     <ClCompile Include="..\..\src\game\states\basegamestate.cpp" />
     <ClCompile Include="..\..\src\game\states\ingame.cpp" />
+    <ClCompile Include="..\..\src\game\states\logo.cpp" />
     <ClCompile Include="..\..\src\game\states\mainmenu.cpp" />
     <ClCompile Include="..\..\src\game\states\saveerror.cpp" />
     <ClCompile Include="..\..\src\game\states\splash.cpp" />

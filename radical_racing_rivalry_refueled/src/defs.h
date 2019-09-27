@@ -9,7 +9,6 @@
 
 #define LINE_BUFFER_CAPACITY    (64)
 #define SHOW_FPS                (1)
-#define ENABLE_BLUR             (1)
 
 class SpriteRenderer;
 
@@ -27,6 +26,7 @@ struct Defs {
         SpriteCar,
         SpriteHud,
         SpriteMenu,
+        SpriteLogo,
         SpritesNb
     };
 

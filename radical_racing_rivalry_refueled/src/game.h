@@ -14,6 +14,7 @@
 
 enum GameState : uint8_t {
     Invalid,
+    Logo,
     Splash,
     MainMenu,
     Ingame,

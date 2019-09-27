@@ -4,7 +4,8 @@
 #define STRINGS_H_
 
 enum Strings : uint8_t {
-    Igm_Restart = 0,
+    Logo_1 = 0,
+    Igm_Restart,
     Igm_BackToMM,
     Dead_Gearbox,
     Dead_Engine,

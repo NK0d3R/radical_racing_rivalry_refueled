@@ -299,3 +299,32 @@ void SpriteRenderer::reasonablyFastBlur() {
         offset += 2;
     }
 }
+
+void SpriteRenderer::drawVerticalGradient(int8_t topR, int8_t topG,
+                                          int8_t topB, int8_t botR,
+                                          int8_t botG, int8_t botB) {
+    FP32 crtR(topR);
+    FP32 crtG(topG);
+    FP32 crtB(topB);
+    FP32 incrR(botR - topR);
+    FP32 incrG(botG - topG);
+    FP32 incrB(botB - topB);
+    FP32 totalH(clip.h);
+    incrR /= totalH;
+    incrG /= totalH;
+    incrB /= totalH;
+    int16_t currentOffset = clip.x + clip.y * frameWidth;
+    for (int16_t line = 0; line < clip.h; ++line) {
+        uint16_t color = Utils::make16BitColorLow(crtR.getInt(),
+                                                  crtG.getInt(),
+                                                  crtB.getInt());
+        int16_t currentPix = currentOffset;
+        for (int16_t col = 0; col < clip.w; ++col) {
+            frameBuffer[currentPix++] = color;
+        }
+        crtR += incrR;
+        crtG += incrG;
+        crtB += incrB;
+        currentOffset += frameWidth;
+    }
+}

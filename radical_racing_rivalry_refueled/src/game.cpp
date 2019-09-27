@@ -7,10 +7,12 @@
 #include "res/car_sprite.h"
 #include "res/hud_sprite.h"
 #include "res/menu_sprite.h"
+#include "res/logo_sprite.h"
 #include "res/font.h"
 #include "res/fontmap.h"
 #include "res/sprites.h"
 #include "res/stringmgr.h"
+#include "game/states/logo.h"
 #include "game/states/splash.h"
 #include "game/states/mainmenu.h"
 #include "game/states/ingame.h"
@@ -48,13 +50,14 @@ void R3R::initialize(uint8_t fps) {
     GetSprite(Defs::SpriteCar)->create(CAR_SPRITE_DATA);
     GetSprite(Defs::SpriteHud)->create(HUD_SPRITE_DATA);
     GetSprite(Defs::SpriteMenu)->create(MENU_SPRITE_DATA);
+    GetSprite(Defs::SpriteLogo)->create(LOGO_SPRITE_DATA);
     GetFont(Defs::FontMain)->create(FONT_DATA, mapping, nb_map_elems,
         Defs::MainFontSpaceW, Defs::MainFontHeight,
         default_frame, map_start_char);
     savingEnabled = initializeFileSystem();
     saveLoad();
     if (savingEnabled) {
-        setState(Splash);
+        setState(Logo);
     } else {
         setState(SaveError);
     }
@@ -91,11 +94,11 @@ void R3R::update() {
         }
         Utils::fastGetDigits(uint16_t(fps), buff + 2, 3);
         GetFont(Defs::FontMain)->drawString(&renderer, buff,
-            Defs::ScreenW - 1, 1,
+            Defs::ScreenW - 1, 0,
             ANCHOR_RIGHT | ANCHOR_TOP);
         Utils::fastGetDigits(minFPS, buff + 2, 3);
         GetFont(Defs::FontMain)->drawString(&renderer, buff,
-            Defs::ScreenW - 1, 8,
+            Defs::ScreenW - 1, 6,
             ANCHOR_RIGHT | ANCHOR_TOP);
     }
     lastFrameTime = currentFrameTime;
@@ -154,6 +157,7 @@ void R3R::saveLoad() {
 
 void R3R::setState(GameState newState) {
     static BaseGameState invalid;
+    static StateLogo logo;
     static StateSplash splash;
     static StateMainMenu mainmenu;
     static StateIngame ingame;
@@ -161,6 +165,7 @@ void R3R::setState(GameState newState) {
     static StateSaveError saveerror;
     static BaseGameState* states[] = {
         &invalid,
+        &logo,
         &splash,
         &mainmenu,
         &ingame,

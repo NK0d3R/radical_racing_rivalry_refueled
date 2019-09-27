@@ -138,11 +138,11 @@
     <ClInclude Include="..\..\src\game\states\saveerror.h">
       <Filter>src\game\states</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\game\states\logo.h">
+      <Filter>src\game\states</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="RRRR.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\engine\ardusprite.cpp">
       <Filter>src\engine</Filter>
     </ClCompile>
@@ -204,6 +204,12 @@
       <Filter>src\engine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\game\states\saveerror.cpp">
+      <Filter>src\game\states</Filter>
+    </ClCompile>
+    <ClCompile Include="R3R.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game\states\logo.cpp">
       <Filter>src\game\states</Filter>
     </ClCompile>
   </ItemGroup>

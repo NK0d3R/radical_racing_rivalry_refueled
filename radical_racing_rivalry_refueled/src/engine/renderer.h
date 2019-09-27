@@ -60,5 +60,7 @@ class SpriteRenderer {
                                 Utils::getBLow(one) + Utils::getBLow(two), 31);
         return Utils::make16BitColorLow(totalR, totalG, totalB);
     }
+    void drawVerticalGradient(int8_t topR, int8_t topG, int8_t topB,
+                              int8_t botR, int8_t botG, int8_t botB);
 };
 #endif  // RENDERER_H_
