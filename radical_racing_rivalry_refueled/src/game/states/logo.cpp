@@ -18,8 +18,8 @@ void StateLogo::stateUpdate() {
 }
 
 void StateLogo::stateRender(SpriteRenderer* renderer) {
-    renderer->drawVerticalGradient(24, 0, 24,
-                                   0, 16, 0);
+    renderer->drawVerticalGradient(20, 0, 31,
+                                   0, 0, 0);
     GetSprite(Defs::SpriteLogo)->drawAnimationFrame(renderer, 0, 0, 0, 0, 0);
     if (stateFrameCounter > 75) {
         renderer->reasonablyFastBlur();

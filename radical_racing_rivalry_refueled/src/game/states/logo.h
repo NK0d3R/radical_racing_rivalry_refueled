@@ -14,4 +14,4 @@ class StateLogo : public BaseGameState {
     virtual void stateRender(SpriteRenderer* renderer);
 };
 
-#endif  // BASEGAMESTATE_H_
+#endif  // LOGO_H_

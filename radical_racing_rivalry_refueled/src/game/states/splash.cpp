@@ -28,7 +28,7 @@ void StateSplash::stateUpdate() {
             overlayX = 10;
             overlayW = 80;
         }
-        fireEffect.addTempOverlay(overlayX, 52, overlayW, 8);
+        fireEffect.addTempOverlay(overlayX, 54, overlayW, 8);
     }
     if ((g.oldButtonsState ^ g.buttonsState) & g.buttonsState) {
         g.setState(MainMenu);

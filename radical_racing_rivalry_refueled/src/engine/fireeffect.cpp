@@ -46,7 +46,7 @@ void FireEffect::generateBaseline(uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
 
 void FireEffect::process(uint8_t x, uint8_t y, uint8_t w) {
     int16_t offset = width * y + x;
-    uint8_t totalH = (y + 1) - 2;
+    uint8_t totalH = y;
     uint32_t randomOffset = Utils::random32();
     uint8_t offsetBit = 0;
     int8_t increment = 1;
@@ -80,8 +80,8 @@ void FireEffect::update() {
 
 void FireEffect::render(SpriteRenderer* renderer) {
     renderer->renderFireEffect(buffer, palette, width,
-                               height - baselineH, buffScale,
-                               buffScale * baselineH - 1);
+                               height, buffScale,
+                               0);
 }
 
 void FireEffect::addTempOverlay(uint8_t x, uint8_t y,
