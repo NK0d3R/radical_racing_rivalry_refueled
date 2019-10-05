@@ -23,7 +23,7 @@ void StateMainMenu::stateUpdate() {
     uint8_t changedButtons = (g.buttonsState ^ g.oldButtonsState);
     m.updateControls(g.buttonsState, g.oldButtonsState);
     fireEffect.update();
-    if (changedButtons & g.buttonsState & BTN_B) {
+    if (changedButtons & g.buttonsState & BTN_A) {
         uint8_t playerChassis = m.getItemOption(2);
         l.setGameMode(m.getItemOption(0));
         l.setGearMode(m.getItemOption(1));
@@ -50,4 +50,13 @@ void StateMainMenu::stateRender(SpriteRenderer* renderer) {
     GetFont(Defs::FontMain)->drawString(
                 renderer, getStringBuffer(),
                 Defs::ScreenW / 2, 64, ANCHOR_BOTTOM | ANCHOR_HCENTER, -1);
+    drawButtonHint(95, m.getCurrentSelection() != 2 ? 56 : 36, renderer);
+}
+
+void StateMainMenu::drawButtonHint(uint8_t x, uint8_t y,
+                                   SpriteRenderer* renderer) {
+    GetSprite(Defs::SpriteMenu)->drawAnimationFrame(
+                renderer, Defs::AnimMenuElements,
+                Defs::ButtonHint +
+                ((stateFrameCounter & 31) < 15 ? 0 : 1), x, y, 0);
 }

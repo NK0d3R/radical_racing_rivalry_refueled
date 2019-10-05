@@ -27,10 +27,6 @@ void Menu::drawSpriteElementBackground(SpriteRenderer* renderer,
             crtX += bgTileW;
         }
     }
-    renderer->drawLine(renderer->getClip().x, renderer->getClip().y,
-                       maxX, renderer->getClip().y, 0xFFFF);
-    renderer->drawLine(renderer->getClip().x, renderer->getClip().maxY,
-                       maxX, renderer->getClip().maxY, 0xFFFF);
     if (hasArrows) {
         uint8_t arrowOffset = 3 + ((frame & 5) >> 2);
         spr->drawAnimationFrame(renderer,
@@ -92,7 +88,7 @@ void Menu::updateControls(uint8_t buttonsState, uint8_t oldButtonsState) {
     if ((changedButtons & buttonsState & DPAD_RIGHT)) {
         onRight();
     }
-    if ((changedButtons & buttonsState & BTN_B)) {
+    if ((changedButtons & buttonsState & BTN_A)) {
         onConfirm();
     }
 }
@@ -138,10 +134,10 @@ void Menu::restart() {
 }
 
 PROGMEM const uint32_t mainmenu[] = {
-    Menu::itemDataCreate(0, 1, Menu::FlagSprite, 0, 24),
+    Menu::itemDataCreate(0, 1, Menu::FlagSprite, 0, 20),
     Menu::itemDataCreate(0, 1, Menu::FlagSprite, 2, 18),
     Menu::itemDataCreate(0, Defs::CarNbChassis - 1,
-                         Menu::FlagSprite | Menu::FlagAltSprite, 0, 14)
+                         Menu::FlagSprite | Menu::FlagAltSprite, 0, 18)
 };
 
 PROGMEM const uint32_t endracemenu[] = {

@@ -46,7 +46,7 @@ void FireEffect::generateBaseline(uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
 
 void FireEffect::process(uint8_t x, uint8_t y, uint8_t w) {
     int16_t offset = width * y + x;
-    uint8_t totalH = y;
+    uint8_t totalH = y - 1;
     uint32_t randomOffset = Utils::random32();
     uint8_t offsetBit = 0;
     int8_t increment = 1;

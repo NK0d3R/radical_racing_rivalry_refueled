@@ -45,6 +45,7 @@ class Menu {
     }
     void restart();
     uint8_t getAction() { return action; }
+    uint8_t getCurrentSelection() { return crtSelection; }
     static constexpr uint32_t itemDataCreate(uint32_t actionID,
                                              uint32_t optionCount,
                                              uint32_t spriteFlag,

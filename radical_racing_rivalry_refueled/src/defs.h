@@ -8,7 +8,7 @@
 #include "res/strings.h"
 
 #define LINE_BUFFER_CAPACITY    (64)
-#define SHOW_FPS                (1)
+#define SHOW_FPS                (0)
 
 class SpriteRenderer;
 
@@ -110,7 +110,8 @@ struct Defs {
         MenuItemBg = 0,
         MenuArrowR = 2,
         MenuArrowL,
-        MenuSplash
+        MenuSplash,
+        ButtonHint
     };
 
     // AnimLogo frames

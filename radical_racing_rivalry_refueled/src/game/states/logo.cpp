@@ -12,7 +12,7 @@ void StateLogo::stateInit() {
 void StateLogo::stateUpdate() {
     R3R& g = R3R::getInstance();
     if (((g.oldButtonsState ^ g.buttonsState) & g.buttonsState &&
-        stateFrameCounter > 75) || stateFrameCounter > 120) {
+        stateFrameCounter > 60) || stateFrameCounter > 105) {
         g.setState(Splash);
     }
 }
@@ -21,7 +21,7 @@ void StateLogo::stateRender(SpriteRenderer* renderer) {
     renderer->drawVerticalGradient(20, 0, 31,
                                    0, 0, 0);
     GetSprite(Defs::SpriteLogo)->drawAnimationFrame(renderer, 0, 0, 0, 0, 0);
-    if (stateFrameCounter > 75) {
+    if (stateFrameCounter > 60) {
         renderer->reasonablyFastBlur();
         GetFont(Defs::FontMain)->drawString(renderer,
                                             getString(Strings::Logo_1),
