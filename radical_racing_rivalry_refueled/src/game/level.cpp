@@ -225,7 +225,7 @@ void Level::setState(LevelState newState) {
                     if (endResult != RaceEndLose) {
                         checkRecord();
                         if (getGameMode() == Duel) {
-                            R3R::getInstance().increaseDuelWins();
+                            R3R::getInstance().increaseDuelWins(getGameMode());
                         }
                         R3R::getInstance().saveSave();
                     }

@@ -24,6 +24,8 @@ void StateMainMenu::stateUpdate() {
     m.updateControls(g.buttonsState, g.oldButtonsState);
     fireEffect.update();
     if (changedButtons & g.buttonsState & BTN_A) {
+        uint8_t gameMode = m.getItemOption(0);
+        uint8_t gearMode = m.getItemOption(1);
         uint8_t playerChassis = m.getItemOption(2);
         l.setGameMode(m.getItemOption(0));
         l.setGearMode(m.getItemOption(1));
@@ -31,6 +33,8 @@ void StateMainMenu::stateUpdate() {
         l.setRivalChassis(Utils::random8Except(
                           0, Defs::CarNbChassis, playerChassis));
         l.restart();
+        g.saveGameConfig(gameMode, gearMode, playerChassis);
+        g.saveSave();
         g.setState(Ingame);
     }
 }
@@ -41,15 +45,24 @@ void StateMainMenu::stateRender(SpriteRenderer* renderer) {
     fireEffect.render(renderer);
     m.draw(renderer, (Defs::ScreenW >> 1), 0);
     uint8_t selectedGameMode = m.getItemOption(0);
-    getString(Strings::BestTime);
-    Utils::formatTime(g.getTimeRecord(selectedGameMode,
-                                      m.getItemOption(1)),
-                      getStringBuffer() +
-                      getStringLen(Strings::BestTime),
-                      selectedGameMode == 1);
+    uint8_t selectedGearMode = m.getItemOption(1);
+    bool showWins = (selectedGameMode == 1) &&
+                    (stateFrameCounter & 255) < 128;
+    if (showWins) {
+        getString(Strings::Wins);
+        Utils::getDigits(g.getNbDuelWins(selectedGearMode),
+                         getStringBuffer() + getStringLen(Strings::Wins));
+    } else {
+        getString(Strings::BestTime);
+        Utils::formatTime(g.getTimeRecord(selectedGameMode,
+                                          selectedGearMode),
+                          getStringBuffer() +
+                          getStringLen(Strings::BestTime),
+                          selectedGameMode == 1);
+    }
     GetFont(Defs::FontMain)->drawString(
-                renderer, getStringBuffer(),
-                Defs::ScreenW / 2, 64, ANCHOR_BOTTOM | ANCHOR_HCENTER, -1);
+        renderer, getStringBuffer(),
+        Defs::ScreenW / 2, 64, ANCHOR_BOTTOM | ANCHOR_HCENTER, -1);
     drawButtonHint(95, m.getCurrentSelection() != 2 ? 56 : 36, renderer);
 }
 

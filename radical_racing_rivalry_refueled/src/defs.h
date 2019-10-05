@@ -215,6 +215,7 @@ struct Utils {
     }
 
     static void fastGetDigits(uint16_t value, char* dest, uint16_t nbDigits);
+    static void getDigits(uint16_t value, char* dest);
     static void formatTime(int32_t time, char* dest, bool addSign = false);
     static void formatDistance(int16_t distance, char* dest);
     static void drawBlinkingText(SpriteRenderer* renderer, Strings stringID,

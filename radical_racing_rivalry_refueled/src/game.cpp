@@ -57,6 +57,9 @@ void R3R::initialize(uint8_t fps) {
     savingEnabled = initializeFileSystem();
     saveLoad();
     if (savingEnabled) {
+        level.setGameMode(getSavedGameMode());
+        level.setGearMode(getSavedGearMode());
+        level.setMainChassis(getSavedChassis());
         setState(Logo);
     } else {
         setState(SaveError);
@@ -128,10 +131,22 @@ void R3R::updateTimeRecord(uint8_t gameMode, uint8_t gearMode,
     profileNeedsSave = true;
 }
 
-void R3R::increaseDuelWins() {
-    if (p.nbDuelWins < 9999999) {
-        p.nbDuelWins++;
+void R3R::increaseDuelWins(uint8_t gearMode) {
+    if (p.nbDuelWins[gearMode] < 999999) {
+        p.nbDuelWins[gearMode]++;
         profileNeedsSave = true;
+    }
+}
+
+void R3R::saveGameConfig(uint8_t gameMode,
+                         uint8_t gearMode,
+                         uint8_t chassis) {
+    uint8_t data = ((chassis & 0x7) |
+                   ((gearMode & 0x1) << 3) |
+                   ((gameMode & 0x1) << 4));
+    if (data != p.lastGameConfig) {
+        profileNeedsSave = true;
+        p.lastGameConfig = data;
     }
 }
 

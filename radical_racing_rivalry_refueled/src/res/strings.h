@@ -21,6 +21,7 @@ enum Strings : uint8_t {
     PressToCont,
     No_Save1,
     No_Save2,
+    Wins,
     StringsNb
 };
 

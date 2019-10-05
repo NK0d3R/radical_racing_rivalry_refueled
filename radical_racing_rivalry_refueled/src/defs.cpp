@@ -28,6 +28,21 @@ void Utils::fastGetDigits(uint16_t value, char* dest, uint16_t nbDigits) {
     }
 }
 
+void Utils::getDigits(uint16_t value, char* dest) {
+    uint8_t nbDigits = 0;
+    uint16_t tValue = value;
+    do {
+        tValue /= 10;
+        nbDigits++;
+    } while (tValue > 0);
+    dest += nbDigits;
+    *dest-- = 0;
+    do {
+        *dest-- = '0' + (value % 10);
+        value /= 10;
+    } while (value > 0);
+}
+
 void Utils::formatTime(int32_t time, char* dest, bool addSign) {
     bool negative = (time < 0);
     if (negative) {

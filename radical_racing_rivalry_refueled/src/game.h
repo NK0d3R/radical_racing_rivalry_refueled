@@ -46,8 +46,8 @@ class R3R {
     struct Profile {
         uint32_t signature;
         int32_t bestTimes[4];
-        uint32_t nbDuelWins;
-        uint8_t lastSelectedChassis;
+        uint32_t nbDuelWins[2];
+        uint8_t lastGameConfig;
     };
     bool profileNeedsSave;
     bool savingEnabled;
@@ -72,7 +72,14 @@ class R3R {
     int32_t getTimeRecord(uint8_t gameMode, uint8_t gearMode);
     void updateTimeRecord(uint8_t gameMode, uint8_t gearMode,
                           int32_t newValue);
-    void increaseDuelWins();
+    void increaseDuelWins(uint8_t gearMode);
+    void saveGameConfig(uint8_t gameMode,
+                        uint8_t gearMode,
+                        uint8_t chassis);
+    uint8_t getSavedGameMode() { return ((p.lastGameConfig >> 4) & 0x1); }
+    uint8_t getSavedGearMode() { return ((p.lastGameConfig >> 3) & 0x1); }
+    uint8_t getSavedChassis() { return (p.lastGameConfig & 0x7); }
+    uint32_t getNbDuelWins(uint8_t gearMode) { return p.nbDuelWins[gearMode]; }
     void setState(GameState newState);
     static R3R& getInstance();
 };
