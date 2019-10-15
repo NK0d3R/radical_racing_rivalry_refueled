@@ -167,6 +167,14 @@ void SpriteAnimator::setAnimation(uint8_t animation, uint8_t flags, bool loop) {
     isPlaying = true;
 }
 
+void SpriteAnimator::setRandomFrame() {
+    SpriteAnim anim;
+    memcpy_P(&anim, &sprite->anims[currentAnim], sizeof(SpriteAnim));
+    currentAnimFrame = rand() % anim.framesNb;
+    currentFrameTime = 0;
+    isPlaying = true;
+}
+
 bool SpriteAnimator::update(uint16_t dt) {
     if (isPlaying == false) {
         return false;

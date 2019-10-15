@@ -122,6 +122,7 @@ class SpriteAnimator {
  public:
     void init(Sprite* animSprite);
     void setAnimation(uint8_t animation, uint8_t flags, bool loop);
+    void setRandomFrame();
     bool update(uint16_t dt);
     void draw(SpriteRenderer* renderer, int16_t posX, int16_t posY);
     bool animPlaying() { return isPlaying; }

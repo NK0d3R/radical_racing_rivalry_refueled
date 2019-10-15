@@ -157,13 +157,25 @@ class Level {
         Screen_Flag
     };
 
+    enum EntityInstance : int8_t {
+        PlayerCar,
+        EnemyCar1,
+        EnemyCar2,
+        Barrel1,
+        Barrel2,
+        NbInstances
+    };
+
+    static constexpr char MaxActiveEntities = 4;
+
     LevelState      state = Countdown;
     GameMode        mode = TimeAttack;
     GearShiftAuto   autoGearShift;
     GearShiftManual manualGearShift;
     GearShift*      currentGearShift = &autoGearShift;
     EndResultType   endResult = NoResult;
-
+    GameObject*     entityRepo[EntityInstance::NbInstances];
+    GameObject*     activeEntities[MaxActiveEntities];
     SpriteAnimator  screenAnim;
     ScreenAnimType  screenAnimType;
     Car*            playerCar;
@@ -175,6 +187,10 @@ class Level {
     uint8_t         maxStateCounter;
     uint8_t         mainChassis;
     uint8_t         rivalChassis;
+    uint8_t         nbActiveEntities;
+    bool            mustMoveBarrels;
+    uint8_t         barrelOne;
+    uint8_t         barrelTwo;
     bool            newRecord;
 
     static constexpr uint8_t kAccelButton = BTN_B;
@@ -197,8 +213,6 @@ class Level {
                          uint8_t anim = 0, bool loop = false);
     template<typename F>
     void foreachGameObject(F func);
-    void drawMarker(SpriteRenderer* renderer, const FP32& worldPos);
-    void drawGameMarkers(SpriteRenderer* renderer);
     void setState(LevelState newState);
     void setEndRace(EndResultType type);
     void checkRecord();

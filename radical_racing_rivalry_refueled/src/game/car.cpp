@@ -90,10 +90,8 @@ Car::Car(Level* p, uint8_t scrW) : GameObject(p, scrW) {
                                   Defs::LightFrameAlert);
 }
 
-void Car::reset(const FP32& z) {
-    xPos = 0;
-    zPos = z;
-    screenY = parent->worldToScreenY(xPos, z);
+void Car::reset(const FP32& x, const FP32& z) {
+    GameObject::reset(x, z);
     engineRPM = 0;
     wheelsRPM = 0;
     speed = 0;

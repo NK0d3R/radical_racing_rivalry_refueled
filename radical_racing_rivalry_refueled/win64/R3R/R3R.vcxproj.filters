@@ -141,6 +141,9 @@
     <ClInclude Include="..\..\src\game\states\logo.h">
       <Filter>src\game\states</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\game\animatedgameobject.h">
+      <Filter>src\game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\engine\ardusprite.cpp">
@@ -211,6 +214,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\game\states\logo.cpp">
       <Filter>src\game\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game\animatedgameobject.cpp">
+      <Filter>src\game</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

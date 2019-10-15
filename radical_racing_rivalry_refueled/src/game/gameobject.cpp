@@ -1,4 +1,4 @@
-// Copyright 2018 Catalin G. Manciu
+// Copyright 2019 Catalin G. Manciu
 
 #include "gameobject.h"
 #include "level.h"
@@ -10,4 +10,10 @@ bool GameObject::isVisible() {
 
 void GameObject::updateScreenX() {
     screenX = parent->worldToScreenX(xPos, zPos);
+}
+
+void GameObject::reset(const FP32& x, const FP32& z) {
+    xPos = x;
+    zPos = z;
+    screenY = parent->worldToScreenY(xPos, z);
 }

@@ -25,6 +25,7 @@ class GameObject {
     void updateScreenX();
     bool isVisible();
     FP32& getX()            { return xPos; }
+    virtual void reset(const FP32& x, const FP32& z);
     virtual void update(int16_t dt) = 0;
     virtual void draw(SpriteRenderer* renderer) = 0;
     virtual void onRaceStart() {}

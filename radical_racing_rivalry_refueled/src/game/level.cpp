@@ -3,6 +3,7 @@
 #include "level.h"
 #include "car.h"
 #include "enemycar.h"
+#include "animatedgameobject.h"
 #include "../res/stringmgr.h"
 #include "../engine/renderer.h"
 #include "../res/sprites.h"
@@ -13,8 +14,8 @@ Level::BackgroundLayer* Level::bgLayers[] = {
     new BackgroundSprite(25, 190, Defs::BackgroundLayer1, 10),
     new BackgroundSprite(25, 190, Defs::BackgroundLayer2, 60),
     new BackgroundGrid(25, 40, 8, 80),
-    new BackgroundLineScroll(41, 16, 210),
-    new BackgroundSprite(42, 240, Defs::BackgroundLayer3, 210)
+    new BackgroundLineScroll(41, 16, 250),
+    new BackgroundSprite(42, 240, Defs::BackgroundLayer3, 250)
 };
 
 int16_t Level::BackgroundLayer::camPosToOffset(const FP32& cameraPosition) {
@@ -27,7 +28,7 @@ void Level::BackgroundGrid::drawSingleLine(SpriteRenderer* renderer,
                                            int16_t x, int16_t yTop,
                                            int16_t yBot) {
     FP32 lineX(x);
-    FP32 lineXBottom = lineX * FP32(2.25f);
+    FP32 lineXBottom = lineX * FP32(3.0f);
     Line current(lineX + Defs::FPHalfScrW, FP32(yTop),
                  lineXBottom + Defs::FPHalfScrW, FP32(yBot));
     renderer->getClip().clipLineX(&current);
@@ -174,22 +175,46 @@ void Level::BackgroundBlur::draw(SpriteRenderer* renderer,
 }
 
 Level::Level() {
-    playerCar = new Car(this, 43);
-    enemyCar = new EnemyCar(this, 43);
+    entityRepo[EntityInstance::PlayerCar] = new Car(this, 43);
+    for (uint8_t idx = EntityInstance::EnemyCar1;
+         idx <= EntityInstance::EnemyCar2; ++idx) {
+        entityRepo[idx] = new EnemyCar(this, 43);
+    }
+    for (uint8_t idx = EntityInstance::Barrel1;
+         idx <= EntityInstance::Barrel2; ++idx) {
+        entityRepo[idx] = new AnimatedGameObject(this, 10, Defs::SpriteEnv, 1);
+    }
     state = Invalid;
 }
 
 void Level::restart() {
-    playerCar->setChassis(mainChassis);
-    playerCar->reset(getGameMode() == Duel ? FP32(0.9f) : FP32(0.7f));
+    nbActiveEntities = 0;
+    activeEntities[nbActiveEntities] = entityRepo[EntityInstance::Barrel1];
+    activeEntities[nbActiveEntities]->reset(FP32(0), FP32(0));
+    barrelOne = nbActiveEntities++;
+
     if (getGameMode() == Duel) {
+        activeEntities[nbActiveEntities] =
+                    entityRepo[EntityInstance::EnemyCar1];
+        enemyCar = static_cast<Car*>(activeEntities[nbActiveEntities++]);
         enemyCar->setChassis(rivalChassis);
-        enemyCar->reset(FP32(0.3f));
+        enemyCar->reset(FP32(0), FP32(0.3f));
     }
+
+    activeEntities[nbActiveEntities] = entityRepo[EntityInstance::PlayerCar];
+    playerCar = static_cast<Car*>(activeEntities[nbActiveEntities++]);
+    playerCar->setChassis(mainChassis);
+    playerCar->reset(FP32(0), getGameMode() == Duel ? FP32(0.9f) : FP32(0.7f));
+
+    activeEntities[nbActiveEntities] = entityRepo[EntityInstance::Barrel2];
+    activeEntities[nbActiveEntities]->reset(FP32(0), FP32(1.0f));
+    barrelTwo = nbActiveEntities++;
+
     levelTimer = 0;
     endResult = NoResult;
     newRecord = false;
     screenAnimType = None;
+    mustMoveBarrels = true;
     currentGearShift->reset();
     setState(Countdown);
 }
@@ -242,10 +267,9 @@ void Level::setState(LevelState newState) {
 
 template<typename F>
 void Level::foreachGameObject(F func) {
-    if (getGameMode() == Duel) {
-        func(enemyCar);
+    for (uint8_t idx = 0; idx < nbActiveEntities; ++idx) {
+        func(activeEntities[idx]);
     }
-    func(playerCar);
 }
 
 void Level::draw(SpriteRenderer* renderer) {
@@ -253,7 +277,6 @@ void Level::draw(SpriteRenderer* renderer) {
     for (auto layer : bgLayers) {
         layer->draw(renderer, cameraPosition);
     }
-    drawGameMarkers(renderer);
     foreachGameObject([&](GameObject* obj) {
                        if (obj->isVisible()) obj->draw(renderer);
                       });
@@ -262,6 +285,13 @@ void Level::draw(SpriteRenderer* renderer) {
         drawDistanceToRival(renderer, 96, 32);
     }
 
+    if (state == Race && mustMoveBarrels &&
+        activeEntities[barrelOne]->isVisible() == false &&
+        activeEntities[barrelTwo]->isVisible() == false) {
+        activeEntities[barrelOne]->reset(Defs::RaceLength, FP32(0));
+        activeEntities[barrelTwo]->reset(Defs::RaceLength, FP32(1.0f));
+        mustMoveBarrels = false;
+    }
     bool drawHud = (state == Race ||
                     (state == Result && endResult < RaceEndLose &&
                      screenAnim.getCurrentFrame() == 0));
@@ -544,30 +574,9 @@ void Level::drawDistanceToRival(SpriteRenderer* renderer, uint8_t x,
     }
 }
 
-void Level::drawMarker(SpriteRenderer* renderer, const FP32& worldPos) {
-    FP32 x1(worldToScreenX(worldPos, FP32(0)));
-    FP32 y1(worldToScreenY(worldPos, FP32(0)));
-    FP32 x2(worldToScreenX(worldPos, FP32(1)));
-    FP32 y2(worldToScreenY(worldPos, FP32(1)));
-    Line current(x1, y1, x2, y2);
-    renderer->getClip().clipLineX(&current);
-    if (current.exists()) {
-        renderer->drawLine(current.start.x.getInt(),
-                           current.start.y.getInt(),
-                           current.end.x.getInt(),
-                           current.end.y.getInt(),
-                           0xFFFF);
-    }
-}
-
-void Level::drawGameMarkers(SpriteRenderer* renderer) {
-    drawMarker(renderer, FP32(0));
-    drawMarker(renderer, Defs::RaceLength);
-}
-
 int32_t Level::worldToScreenX(const FP32& x, const FP32& y) {
     return (Defs::FPHalfScrW + Utils::metersToPixels(x - cameraPosition) *
-            (FP32(0.7f) + y * FP32(0.5f))).getInt();
+            (FP32(0.24f) + y * FP32(0.40f))).getInt();
 }
 
 uint8_t Level::worldToScreenY(const FP32& x, const FP32& y) {

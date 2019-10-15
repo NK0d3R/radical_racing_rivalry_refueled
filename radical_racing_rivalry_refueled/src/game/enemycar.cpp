@@ -2,8 +2,8 @@
 
 #include "enemycar.h"
 
-void EnemyCar::reset(const FP32& z) {
-    Car::reset(z);
+void EnemyCar::reset(const FP32& x, const FP32& z) {
+    Car::reset(x, z);
     state = Invalid;
     setState(Wait);
 }

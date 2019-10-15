@@ -176,6 +176,7 @@
     <ClInclude Include="..\..\src\engine\primitives.h" />
     <ClInclude Include="..\..\src\engine\renderer.h" />
     <ClInclude Include="..\..\src\game.h" />
+    <ClInclude Include="..\..\src\game\animatedgameobject.h" />
     <ClInclude Include="..\..\src\game\car.h" />
     <ClInclude Include="..\..\src\game\enemycar.h" />
     <ClInclude Include="..\..\src\game\gameobject.h" />
@@ -210,6 +211,7 @@
     <ClCompile Include="..\..\src\engine\primitives.cpp" />
     <ClCompile Include="..\..\src\engine\renderer.cpp" />
     <ClCompile Include="..\..\src\game.cpp" />
+    <ClCompile Include="..\..\src\game\animatedgameobject.cpp" />
     <ClCompile Include="..\..\src\game\car.cpp" />
     <ClCompile Include="..\..\src\game\enemycar.cpp" />
     <ClCompile Include="..\..\src\game\gameobject.cpp" />
