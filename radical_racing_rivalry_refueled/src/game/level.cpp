@@ -442,7 +442,7 @@ void Level::updateControls(uint8_t buttonsState, uint8_t oldButtonsState) {
             playerCar->shiftGear(shiftResult);
         } else {
             playerCar->destroy();
-            endResult = EndResultType::PlayerDeadGearbox;
+            setEndRace(EndResultType::PlayerDeadGearbox);
         }
     }
 }
@@ -467,9 +467,7 @@ void Level::update(int16_t dt) {
 }
 
 void Level::setEndRace(EndResultType type) {
-    if (endResult == NoResult) {
-        endResult = type;
-    }
+    endResult = type;
     if (getGameMode() == Duel) {
         FP32 difference(enemyCar->getX() - playerCar->getX());
         difference /= Defs::MaxCarSpeed;
@@ -497,7 +495,8 @@ void Level::updateState(int16_t dt) {
             if (playerFinished && !enemyFinished) {
                 setEndRace(
                     static_cast<EndResultType>(
-                        static_cast<uint8_t>(EndResultType::RaceEndTimeAttack) +
+                        static_cast<uint8_t>(
+                            EndResultType::RaceEndTimeAttack) +
                         getGameMode()));
                 break;
             } else if (!playerFinished && enemyFinished) {
@@ -547,7 +546,7 @@ void Level::raceStart() {
 }
 
 void Level::raceEnd() {
-    foreachGameObject([&](GameObject* obj) { obj->onRaceEnd(); });
+    foreachGameObject([&](GameObject* obj) { obj->onRaceEnd(endResult); });
     setState(Result);
 }
 

@@ -19,6 +19,7 @@ void AnimatedGameObject::draw(SpriteRenderer* renderer) {
     animator.draw(renderer, screenX, screenY);
 }
 
-void AnimatedGameObject::onRaceStart() {
+void AnimatedGameObject::reset(const FP32& x, const FP32& z) {
+    GameObject::reset(x, z);
     animator.setRandomFrame();
 }

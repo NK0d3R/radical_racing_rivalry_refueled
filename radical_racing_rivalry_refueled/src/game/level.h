@@ -46,6 +46,15 @@ class Level {
     }
     Car* getPlayer() { return playerCar; }
 
+    enum EndResultType : int8_t {
+        NoResult = -1,
+        PlayerDeadGearbox = 0,
+        PlayerDeadEngine,
+        RaceEndLose,
+        RaceEndTimeAttack,
+        RaceEndWin
+    };
+
  private:
     class BackgroundLayer {
      public:
@@ -140,15 +149,6 @@ class Level {
     enum GameMode : uint8_t {
         TimeAttack = 0,
         Duel,
-    };
-
-    enum EndResultType : int8_t {
-        NoResult = -1,
-        PlayerDeadGearbox = 0,
-        PlayerDeadEngine,
-        RaceEndLose,
-        RaceEndTimeAttack,
-        RaceEndWin
     };
 
     enum ScreenAnimType : int8_t {

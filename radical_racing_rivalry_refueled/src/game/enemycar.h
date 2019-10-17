@@ -13,10 +13,12 @@ class EnemyCar final : public Car {
     virtual void reset(const FP32& x, const FP32& z);
     virtual void update(int16_t dt);
     virtual void onRaceStart();
-    virtual void onRaceEnd();
+    virtual void onRaceEnd(uint8_t endResult);
  private:
     static constexpr uint16_t GearChangeRPMStart = Defs::OverheatRPM - 200;
+    static constexpr int8_t ReRollCooldown = 2;
     int16_t stateTimer;
+    int8_t rollCounter;
 
     enum AIState : uint8_t {
         Invalid,

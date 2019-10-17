@@ -29,7 +29,7 @@ class GameObject {
     virtual void update(int16_t dt) = 0;
     virtual void draw(SpriteRenderer* renderer) = 0;
     virtual void onRaceStart() {}
-    virtual void onRaceEnd() {}
+    virtual void onRaceEnd(uint8_t endResult) {}
 };
 
 #endif  // GAMEOBJECT_H_

@@ -112,13 +112,20 @@ void Car::reset(const FP32& x, const FP32& z) {
 void Car::shiftGear(bool up) {
     if (up == true) {
         if (gear < Defs::MaxGear) {
-            gear++;
+            shiftGear(int8_t(gear + 1));
         }
     } else {
         if (gear > 0) {
-            gear--;
+            shiftGear(int8_t(gear - 1));
         }
     }
+}
+
+void Car::shiftGear(int8_t newGear) {
+    if (newGear > gear) {
+        setOverheatCounter(0);
+    }
+    gear = newGear;
 }
 
 void Car::destroy() {
@@ -184,37 +191,34 @@ void Car::updateEngine(int16_t dt) {
             engineRPM.clamp(Defs::MinRPM, Defs::MaxRPM);
         }
 
-        if (engineRPM > Defs::MaxRPM) {
-            destroy();
-        } else {
-            uint16_t engineRPMi = engineRPM.getInt();
-            uint16_t baseOverheat = 1 + (gear >> 1);
-            uint8_t oldOverheat = overheatCounter;
-            if (throttle > 0 && engineRPMi >= Defs::OverheatRPM) {
-                uint16_t overheatIncrease = baseOverheat +
-                                            (engineRPMi - Defs::OverheatRPM) /
-                                            Defs::OverheatDiv;
-                overheatCounter += overheatIncrease;
-                if (overheatCounter > Defs::MaxOverheat) {
-                    destroy();
-                }
-            } else {
-                if (engineRPMi < Defs::OverheatRPM) {
-                    overheatCounter = 0;
-                } else {
-                    uint8_t coolingSpeed = 4 - baseOverheat;
-                    if (overheatCounter >= (coolingSpeed + 1)) {
-                        overheatCounter -= coolingSpeed;
-                    } else {
-                        overheatCounter = 1;  // > 0 while RPM > overheat
-                    }
-                }
+        uint16_t engineRPMi = engineRPM.getInt();
+        uint16_t baseOverheat = 1 + (gear >> 1);
+        uint8_t newOverheat = overheatCounter;
+        bool isOverheating = engineRPMi >= Defs::OverheatRPM;
+        if ((throttle > 0 && isOverheating) ||
+            engineRPM >= Defs::MaxRPM) {
+            uint16_t overheatIncrease = baseOverheat +
+                                        (engineRPMi - Defs::OverheatRPM) /
+                                        Defs::OverheatDiv;
+            if (engineRPM >= Defs::MaxRPM) {
+                overheatIncrease << 1;
             }
-            if (oldOverheat != overheatCounter) {
-                onOverheatChanged(oldOverheat, overheatCounter);
+            newOverheat += overheatIncrease;
+        } else {
+            uint8_t coolingSpeed = 4 - baseOverheat;
+            if (!isOverheating) {
+                coolingSpeed <<= 1;
+            }
+            if (overheatCounter >= (coolingSpeed + 1)) {
+                newOverheat -= coolingSpeed;
+            } else {
+                // > 0 while RPM > overheat
+                newOverheat = isOverheating ? 1 : 0;
             }
         }
+        setOverheatCounter(newOverheat);
     }
+
     forwardForce += kWindResistanceConst +
                      (speed * speed * kWindResistanceMult) /
                      kWindResistanceDiv;
@@ -251,6 +255,17 @@ void Car::update(int16_t dt) {
     updateReflectionAnim(dt);
     foreachCarLight([](CarLight* light) { light->update(); });
     explosion.update(dt);
+}
+
+void Car::setOverheatCounter(uint8_t newValue) {
+    if (newValue != overheatCounter) {
+        if (newValue > Defs::MaxOverheat) {
+            newValue = Defs::MaxOverheat;
+            destroy();
+        }
+        onOverheatChanged(overheatCounter, newValue);
+        overheatCounter = newValue;
+    }
 }
 
 void Car::onCarStart() {

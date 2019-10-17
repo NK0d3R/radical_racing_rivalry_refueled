@@ -8,9 +8,9 @@ void EnemyCar::reset(const FP32& x, const FP32& z) {
     setState(Wait);
 }
 
-static constexpr uint8_t kGearSwitchingTimes[] PROGMEM = {
+static constexpr uint8_t kGearSwitchingTimes[]  = {
     25, 60,       // Auto gear mode (in centisecs)
-    50, 75        // Manual gear mode (in centisecs)
+    40, 75        // Manual gear mode (in centisecs)
 };
 
 void EnemyCar::setState(AIState newState) {
@@ -18,14 +18,14 @@ void EnemyCar::setState(AIState newState) {
         switch (newState) {
             case SwitchingGears: {
                 uint8_t gearTimeIdx = (parent->getGearMode() << 1);
-                stateTimer = random(
-                        pgm_read_byte(&kGearSwitchingTimes[gearTimeIdx]),
-                        pgm_read_byte(&kGearSwitchingTimes[gearTimeIdx + 1]));
+                stateTimer = random(kGearSwitchingTimes[gearTimeIdx],
+                                    kGearSwitchingTimes[gearTimeIdx + 1]);
                 stateTimer *= 10;
                 setClutch(true);
                 shiftGear(true);
             } break;
             case Accelerating: {
+                rollCounter = 0;
                 setClutch(false);
             } break;
         }
@@ -68,24 +68,34 @@ void EnemyCar::update(int16_t dt) {
                         static_cast<uint16_t>(Defs::MaxOverheat));
                 }
             }
-            if (switchChance > 0 && random(0, 100) < switchChance) {
-                setState(SwitchingGears);
-            } else {
-                accelerate = true;
+            accelerate = true;
+            if (switchChance > 0) {
+                if (rollCounter == 0) {
+                    if (random(0, 100) < switchChance) {
+                        accelerate = false;
+                        setState(SwitchingGears);
+                    } else {
+                        rollCounter = ReRollCooldown;
+                    }
+                } else {
+                    rollCounter--;
+                }
             }
         } break;
     }
     pedalToTheMetal(accelerate);
+    Car::update(dt);
     if (!alive) {
         setState(Dead);
     }
-    Car::update(dt);
 }
 
 void EnemyCar::onRaceStart() {
     setState(SwitchingGears);
 }
 
-void EnemyCar::onRaceEnd() {
-    setState(Wait);
+void EnemyCar::onRaceEnd(uint8_t endStatus) {
+    if (endStatus > Level::PlayerDeadEngine && state != Dead) {
+        setState(Wait);
+    }
 }

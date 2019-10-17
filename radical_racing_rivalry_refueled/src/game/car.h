@@ -22,7 +22,7 @@ class Car : public GameObject {
     FP32& getSpeed()                    { return speed; }
     int8_t getGear()                    { return gear; }
     void shiftGear(bool up = true);
-    void shiftGear(int8_t newGear)      { gear = newGear; }
+    void shiftGear(int8_t newGear);
     void pedalToTheMetal(bool on);
     void setClutch(bool on)             { clutch = on; }
     bool isClutched()                   { return clutch; }
@@ -53,6 +53,7 @@ class Car : public GameObject {
     inline void onCarStart();
     inline void onEngineBlown();
     inline void onOverheatChanged(uint8_t oldValue, uint8_t newValue);
+    void setOverheatCounter(uint8_t newValue);
     template<typename F>
     void foreachCarLight(F func,
                          uint8_t start = 0, uint8_t end = NbCarLights) {

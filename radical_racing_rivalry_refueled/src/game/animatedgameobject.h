@@ -17,7 +17,8 @@ class AnimatedGameObject : public GameObject {
     AnimatedGameObject(Level* p, uint8_t scrW, uint8_t spr, uint8_t anim);
     virtual void update(int16_t dt);
     virtual void draw(SpriteRenderer* renderer);
-    virtual void onRaceStart();
+    virtual void reset(const FP32& x, const FP32& z);
+    virtual void onRaceStart() {}
     virtual void onRaceEnd() {}
 };
 
