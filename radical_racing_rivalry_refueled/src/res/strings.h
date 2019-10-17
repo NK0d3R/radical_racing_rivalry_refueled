@@ -22,6 +22,7 @@ enum Strings : uint8_t {
     No_Save1,
     No_Save2,
     Wins,
+    Demo,
     StringsNb
 };
 

@@ -34,7 +34,7 @@ void EnemyCar::setState(AIState newState) {
 }
 
 void EnemyCar::update(int16_t dt) {
-    bool isAhead = parent->getPlayer()->getX() <= getX();
+    bool isAhead = parent->getOtherCar(this)->getX() <= getX();
     bool accelerate = false;
     switch (state) {
         case SwitchingGears: {

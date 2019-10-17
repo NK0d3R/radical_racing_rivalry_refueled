@@ -4,6 +4,7 @@
 #include "../../game.h"
 #include "../../res/firepal.h"
 #include "../../res/sprites.h"
+#include "../level.h"
 
 FireEffect StateSplash::fireEffect;
 
@@ -16,6 +17,7 @@ void StateSplash::stateInit() {
 
 void StateSplash::stateUpdate() {
     R3R& g = R3R::getInstance();
+    Level& l = g.getLevel();
     fireEffect.update();
     if (stateFrameCounter >= LogoLetterWaitFrames + LogoLetterFrames) {
         uint8_t overlayX;
@@ -32,6 +34,15 @@ void StateSplash::stateUpdate() {
     }
     if ((g.oldButtonsState ^ g.buttonsState) & g.buttonsState) {
         g.setState(MainMenu);
+    }
+    if (stateFrameCounter >= DemoStartTime) {
+        uint8_t playerChassis = Utils::random8Except(0, Defs::CarNbChassis);
+        l.setGameMode(Level::GameMode::DuelDemo);
+        l.setMainChassis(playerChassis);
+        l.setRivalChassis(Utils::random8Except(0, Defs::CarNbChassis,
+                                               playerChassis));
+        l.restart();
+        g.setState(Ingame);
     }
 }
 

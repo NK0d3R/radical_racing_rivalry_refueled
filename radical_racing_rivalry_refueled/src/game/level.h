@@ -44,7 +44,8 @@ class Level {
     uint8_t getGameMode() {
         return static_cast<uint8_t>(mode);
     }
-    Car* getPlayer() { return playerCar; }
+    Car* getOtherCar(Car* current) { return current == enemyCar ?
+                                            playerCar : enemyCar; }
 
     enum EndResultType : int8_t {
         NoResult = -1,
@@ -53,6 +54,12 @@ class Level {
         RaceEndLose,
         RaceEndTimeAttack,
         RaceEndWin
+    };
+
+    enum GameMode : uint8_t {
+        TimeAttack = 0,
+        Duel,
+        DuelDemo
     };
 
  private:
@@ -146,11 +153,6 @@ class Level {
         Result
     };
 
-    enum GameMode : uint8_t {
-        TimeAttack = 0,
-        Duel,
-    };
-
     enum ScreenAnimType : int8_t {
         None,
         Screen_Sprite,
@@ -176,6 +178,7 @@ class Level {
     EndResultType   endResult = NoResult;
     GameObject*     entityRepo[EntityInstance::NbInstances];
     GameObject*     activeEntities[MaxActiveEntities];
+    GameObject*     cameraTarget;
     SpriteAnimator  screenAnim;
     ScreenAnimType  screenAnimType;
     Car*            playerCar;

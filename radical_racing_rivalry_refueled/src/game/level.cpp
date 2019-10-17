@@ -193,7 +193,7 @@ void Level::restart() {
     activeEntities[nbActiveEntities]->reset(FP32(0), FP32(0));
     barrelOne = nbActiveEntities++;
 
-    if (getGameMode() == Duel) {
+    if (getGameMode() != TimeAttack) {
         activeEntities[nbActiveEntities] =
                     entityRepo[EntityInstance::EnemyCar1];
         enemyCar = static_cast<Car*>(activeEntities[nbActiveEntities++]);
@@ -201,10 +201,13 @@ void Level::restart() {
         enemyCar->reset(FP32(0), FP32(0.3f));
     }
 
-    activeEntities[nbActiveEntities] = entityRepo[EntityInstance::PlayerCar];
+    activeEntities[nbActiveEntities] = entityRepo[getGameMode() != DuelDemo ?
+                                                    EntityInstance::PlayerCar:
+                                                    EntityInstance::EnemyCar2];
     playerCar = static_cast<Car*>(activeEntities[nbActiveEntities++]);
     playerCar->setChassis(mainChassis);
-    playerCar->reset(FP32(0), getGameMode() == Duel ? FP32(0.9f) : FP32(0.7f));
+    playerCar->reset(FP32(0), getGameMode() != TimeAttack ?
+                     FP32(0.9f) : FP32(0.7f));
 
     activeEntities[nbActiveEntities] = entityRepo[EntityInstance::Barrel2];
     activeEntities[nbActiveEntities]->reset(FP32(0), FP32(1.0f));
@@ -216,6 +219,7 @@ void Level::restart() {
     screenAnimType = None;
     mustMoveBarrels = true;
     currentGearShift->reset();
+    cameraTarget = playerCar;
     setState(Countdown);
 }
 
@@ -285,14 +289,7 @@ void Level::draw(SpriteRenderer* renderer) {
         drawDistanceToRival(renderer, 96, 32);
     }
 
-    if (state == Race && mustMoveBarrels &&
-        activeEntities[barrelOne]->isVisible() == false &&
-        activeEntities[barrelTwo]->isVisible() == false) {
-        activeEntities[barrelOne]->reset(Defs::RaceLength, FP32(0));
-        activeEntities[barrelTwo]->reset(Defs::RaceLength, FP32(1.0f));
-        mustMoveBarrels = false;
-    }
-    bool drawHud = (state == Race ||
+    bool drawHud = ((state == Race && getGameMode() != DuelDemo) ||
                     (state == Result && endResult < RaceEndLose &&
                      screenAnim.getCurrentFrame() == 0));
     if (drawHud) {
@@ -308,6 +305,14 @@ void Level::draw(SpriteRenderer* renderer) {
 
     if (state == Result) {
         drawResult(renderer, Defs::ScreenW / 2, Defs::ResultTextY);
+    }
+
+    if (getGameMode() == DuelDemo &&
+        (R3R::getInstance().getFrameCounter() & 63) < 32) {
+        GetFont(Defs::FontMain)->drawString(renderer, getString(Strings::Demo),
+                                            Defs::ScreenW - 1,
+                                            Defs::ScreenH -1,
+                                            ANCHOR_BOTTOM| ANCHOR_RIGHT, 2);
     }
 }
 
@@ -415,6 +420,9 @@ void Level::drawEndFlag(SpriteRenderer* renderer, uint8_t x,
 }
 
 void Level::updateControls(uint8_t buttonsState, uint8_t oldButtonsState) {
+    if (getGameMode() == DuelDemo) {
+        return;
+    }
     uint8_t changedButtons = (buttonsState ^ oldButtonsState);
     if (state != Race) {
         playerCar->pedalToTheMetal(false);
@@ -485,41 +493,61 @@ void Level::updateState(int16_t dt) {
             }
         break;
         case Race: {
-            if (!playerCar->isAlive()) {
-                setEndRace(EndResultType::PlayerDeadEngine);
-                break;
-            }
-            bool playerFinished = playerCar->getX() >= Defs::RaceLength;
-            bool enemyFinished = getGameMode() == Duel && enemyCar->isAlive()
-                                 && enemyCar->getX() >= Defs::RaceLength;
-            if (playerFinished && !enemyFinished) {
-                setEndRace(
-                    static_cast<EndResultType>(
-                        static_cast<uint8_t>(
-                            EndResultType::RaceEndTimeAttack) +
-                        getGameMode()));
-                break;
-            } else if (!playerFinished && enemyFinished) {
-                setEndRace(EndResultType::RaceEndLose);
-                break;
-            } else if (playerFinished && enemyFinished) {
-                // edge case: both pass finish line on the same frame
-                if (playerCar->getX() >= enemyCar->getX()) {
+            if (getGameMode() != DuelDemo) {
+                if (!playerCar->isAlive()) {
+                    setEndRace(EndResultType::PlayerDeadEngine);
+                    break;
+                }
+                bool playerFinished = playerCar->getX() >= Defs::RaceLength;
+                bool enemyFinished = getGameMode() == Duel &&
+                                     enemyCar->isAlive() &&
+                                     enemyCar->getX() >= Defs::RaceLength;
+                if (playerFinished && !enemyFinished) {
                     setEndRace(
                         static_cast<EndResultType>(
                             static_cast<uint8_t>(
                                 EndResultType::RaceEndTimeAttack) +
                             getGameMode()));
-                } else {
+                    break;
+                } else if (!playerFinished && enemyFinished) {
                     setEndRace(EndResultType::RaceEndLose);
+                    break;
+                } else if (playerFinished && enemyFinished) {
+                    // edge case: both pass finish line on the same frame
+                    if (playerCar->getX() >= enemyCar->getX()) {
+                        setEndRace(
+                            static_cast<EndResultType>(
+                                static_cast<uint8_t>(
+                                    EndResultType::RaceEndTimeAttack) +
+                                getGameMode()));
+                    } else {
+                        setEndRace(EndResultType::RaceEndLose);
+                    }
+                    break;
                 }
-                break;
-            }
-            if (playerCar->isClutched()) {
-                currentGearShift->update();
+                if (playerCar->isClutched()) {
+                    currentGearShift->update();
+                }
+            } else {
+                if (!playerCar->isAlive()) {
+                    cameraTarget = enemyCar;
+                }
+                if (levelTimer > Defs::DemoLength ||
+                    (!playerCar->isAlive() && !enemyCar->isAlive())) {
+                    R3R::getInstance().setState(
+                        (rand() & 63) < 21 ? Logo : Splash);
+                    setState(Invalid);
+                }
             }
             if (screenAnimType != None && playerCar->getSpeed() > 0) {
                 screenAnimType = None;
+            }
+            if (mustMoveBarrels &&
+                activeEntities[barrelOne]->isVisible() == false &&
+                activeEntities[barrelTwo]->isVisible() == false) {
+                activeEntities[barrelOne]->reset(Defs::RaceLength, FP32(0));
+                activeEntities[barrelTwo]->reset(Defs::RaceLength, FP32(1.0f));
+                mustMoveBarrels = false;
             }
             levelTimer += dt;
             if (levelTimer > 5940000) {     // limit it at 99 min
@@ -584,13 +612,13 @@ uint8_t Level::worldToScreenY(const FP32& x, const FP32& y) {
 }
 
 void Level::updateCamera() {
-    FP32 target = playerCar->getX();
+    FP32 target = cameraTarget->getX();
     if (state == Result && endResult >= RaceEndLose) {
         if (stateCounter < (maxStateCounter >> 2)) {
             target = Defs::RaceLength;
         }
     }
-    target += FP32(0.7f);
+    target += FP32(0.6f);
     cameraPosition += target;
     cameraPosition /= 2;
 }

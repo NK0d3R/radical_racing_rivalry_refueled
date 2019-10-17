@@ -6,13 +6,14 @@
 #include "../../res/sprites.h"
 
 void StateMainMenu::stateInit() {
+    R3R& g = R3R::getInstance();
     Menu& m = R3R::getInstance().getMenu();
     Level& l = R3R::getInstance().getLevel();
     m.set(getMenuData(0), 3, 96, Defs::AnimMenuMain, Defs::SpriteCar,
           Defs::AnimCarMenu);
-    m.setItemOption(0, l.getGameMode());
-    m.setItemOption(1, l.getGearMode());
-    m.setItemOption(2, l.getMainChassis());
+    m.setItemOption(0, g.getSavedGameMode());
+    m.setItemOption(1, g.getSavedGearMode());
+    m.setItemOption(2, g.getSavedChassis());
     m.restart();
 }
 

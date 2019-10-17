@@ -153,6 +153,7 @@ struct Defs {
     static constexpr uint8_t MaxOverheat = 36;
     static constexpr uint16_t OverheatRPM = 7400;
     static constexpr uint16_t OverheatDiv = 100;
+    static constexpr uint16_t DemoLength = 18000;
 
     static const FP32 FPHalfScrW;
     static const FP32 MinRPM;
@@ -227,11 +228,11 @@ struct Utils {
     static uint8_t random8Except(uint8_t min, uint8_t max,
                                  uint8_t except = 0xFF) {
         uint8_t range = max - min;
-        uint8_t value = min + ((rand() & 0xFF) % range);
+        uint8_t value = ((rand() & 0xFF) % range);
         if (except != 0xFF && value == except) {
             value = (value + 1) % range;
         }
-        return value;
+        return min + value;
     }
 };
 
