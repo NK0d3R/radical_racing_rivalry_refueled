@@ -15,7 +15,7 @@ void StateSplash::stateInit() {
     } ();
 }
 
-void StateSplash::stateUpdate() {
+void StateSplash::stateUpdate(int16_t dt) {
     R3R& g = R3R::getInstance();
     Level& l = g.getLevel();
     fireEffect.update();

@@ -9,7 +9,7 @@ void StateAfterGameMenu::stateInit() {
     m.restart();
 }
 
-void StateAfterGameMenu::stateUpdate() {
+void StateAfterGameMenu::stateUpdate(int16_t dt) {
     R3R& g = R3R::getInstance();
     Menu& m = g.getMenu();
     Level& l = g.getLevel();

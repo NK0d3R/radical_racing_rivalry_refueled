@@ -85,8 +85,8 @@ class Level {
      public:
         BackgroundGrid(int8_t _yTop, int8_t _yBot,
                        int8_t _density, int16_t factor) :
-                        BackgroundLayer(factor), yTop(_yTop),
-                        yBot(_yBot), density(_density) {}
+                                BackgroundLayer(factor), yTop(_yTop),
+                                yBot(_yBot), density(_density) {}
         virtual void draw(SpriteRenderer* renderer,
                           const FP32& cameraPosition);
     };
@@ -98,8 +98,8 @@ class Level {
      public:
         BackgroundSprite(int8_t y, uint8_t width,
                          uint8_t frame, int16_t factor) :
-                          BackgroundLayer(factor), yPos(y),
-                          width(width), frame(frame) {
+                                BackgroundLayer(factor), yPos(y),
+                                width(width), frame(frame) {
             }
         virtual void draw(SpriteRenderer* renderer,
                           const FP32& cameraPosition);
@@ -110,41 +110,54 @@ class Level {
         uint8_t element;
      public:
          BackgroundLineScroll(int8_t y, uint8_t element, int16_t factor) :
-                              BackgroundLayer(factor), yPos(y),
-                              element(element) {
+                                BackgroundLayer(factor), yPos(y),
+                                element(element) {
         }
         virtual void draw(SpriteRenderer* renderer,
                           const FP32& cameraPosition);
     };
 
     class BackgroundBlur : public BackgroundLayer {
+        bool enabled;
+        int8_t yTop;
+        int8_t height;
      public:
-        BackgroundBlur() : BackgroundLayer(0) {
+        void setEnabled(bool isEnabled) { enabled = isEnabled; }
+        BackgroundBlur(int8_t yTop, int8_t yBot) :
+                                BackgroundLayer(0),
+                                yTop(yTop), height(yBot - yTop + 1),
+                                enabled(false) {
         }
         virtual void draw(SpriteRenderer* renderer,
                           const FP32& cameraPosition);
     };
 
-    class BackgroundChopper : public BackgroundLayer {
-        bool waiting;
-        int8_t  yPos;
-        int16_t timer;
-        FP32 xPos;
-        FP32 xSpeed;    // in px/sec
-        SpriteAnimator chopperAnim;
+    class BackgroundGradient : public BackgroundLayer {
+        int8_t yTop;
+        int8_t height;
+        int8_t rTop;
+        int8_t gTop;
+        int8_t bTop;
+        int8_t rBot;
+        int8_t gBot;
+        int8_t bBot;
      public:
-        BackgroundChopper();
+        BackgroundGradient(int8_t yTop, int8_t yBot,
+                           int8_t rTop, int8_t gTop, int8_t bTop,
+                           int8_t rBot, int8_t gBot, int8_t bBot) :
+                                BackgroundLayer(0),
+                                yTop(yTop), height(yBot - yTop + 1),
+                                rTop(rTop), gTop(gTop), bTop(bTop),
+                                rBot(rBot), gBot(gBot), bBot(bBot) {
+        }
         virtual void draw(SpriteRenderer* renderer,
                           const FP32& cameraPosition);
-        virtual void update(int16_t dt);
-     private:
-        void restart();
-        void wait(bool isWaiting);
     };
 
     FP32 cameraPosition;
 
     static Level::BackgroundLayer* bgLayers[];
+    static BackgroundBlur* backgroundBlur;
 
     enum LevelState : uint8_t {
         Invalid,
@@ -168,7 +181,8 @@ class Level {
         NbInstances
     };
 
-    static constexpr char MaxActiveEntities = 4;
+    static constexpr int8_t MaxActiveEntities = 4;
+    static constexpr int8_t BlurBackgroundIndex = 8;
 
     LevelState      state = Countdown;
     GameMode        mode = TimeAttack;
@@ -208,7 +222,7 @@ class Level {
     inline void drawResult(SpriteRenderer* renderer, uint8_t x, uint8_t y);
     inline void updateState(int16_t dt);
     inline void updateGeneral(int16_t dt);
-    inline void updateCamera();
+    inline void updateCamera(int16_t dt);
     inline void drawDistanceToRival(SpriteRenderer* renderer,
                                     uint8_t x, uint8_t y);
     void startScreenAnim(uint8_t x, uint8_t y, ScreenAnimType type,
@@ -219,6 +233,7 @@ class Level {
     void setState(LevelState newState);
     void setEndRace(EndResultType type);
     void checkRecord();
+    void exitDemo();
 };
 
 #endif  // LEVEL_H_

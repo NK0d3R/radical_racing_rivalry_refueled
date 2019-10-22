@@ -9,7 +9,7 @@
 void StateLogo::stateInit() {
 }
 
-void StateLogo::stateUpdate() {
+void StateLogo::stateUpdate(int16_t dt) {
     R3R& g = R3R::getInstance();
     if (((g.oldButtonsState ^ g.buttonsState) & g.buttonsState &&
         stateFrameCounter > 60) || stateFrameCounter > 105) {

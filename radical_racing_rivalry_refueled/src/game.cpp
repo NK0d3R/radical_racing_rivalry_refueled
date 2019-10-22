@@ -81,7 +81,7 @@ void R3R::update() {
     buttonsState = (getButtonsState() | (getJoystickState() << 2));
 
     tinyScreen.beginFrame();
-    currentState->update();
+    currentState->update(frameTime);
     currentState->render(&renderer);
 #if SHOW_FPS
     static int32_t lastFrameTime = millis();
@@ -114,7 +114,7 @@ void R3R::update() {
 bool R3R::nextFrame() {
     static int32_t lastFrameTime = 0;
     int32_t currentTime = millis();
-    if (currentTime - lastFrameTime < waitTimeMillis) {
+    if ((frameTime = currentTime - lastFrameTime) < waitTimeMillis) {
         return false;
     }
     lastFrameTime = currentTime;

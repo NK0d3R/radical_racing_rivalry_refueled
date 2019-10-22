@@ -9,7 +9,7 @@
 void StateSaveError::stateInit() {
 }
 
-void StateSaveError::stateUpdate() {
+void StateSaveError::stateUpdate(int16_t dt) {
     R3R& g = R3R::getInstance();
     if ((g.oldButtonsState ^ g.buttonsState) & g.buttonsState) {
         g.setState(Splash);

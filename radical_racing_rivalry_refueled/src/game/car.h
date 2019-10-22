@@ -27,6 +27,7 @@ class Car : public GameObject {
     void setClutch(bool on)             { clutch = on; }
     bool isClutched()                   { return clutch; }
     bool isAlive()                      { return alive; }
+    bool isExplosionVisible()           { return explosion.animPlaying(); }
     int8_t getMaxGear()                 { return Defs::MaxGear; }
     void destroy();
     int8_t getOverheat()                { return overheatCounter; }

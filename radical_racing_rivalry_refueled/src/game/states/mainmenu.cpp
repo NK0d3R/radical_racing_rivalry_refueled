@@ -17,7 +17,7 @@ void StateMainMenu::stateInit() {
     m.restart();
 }
 
-void StateMainMenu::stateUpdate() {
+void StateMainMenu::stateUpdate(int16_t dt) {
     R3R& g = R3R::getInstance();
     Menu& m = g.getMenu();
     Level& l = g.getLevel();

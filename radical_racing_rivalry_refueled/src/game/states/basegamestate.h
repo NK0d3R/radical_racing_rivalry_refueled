@@ -11,7 +11,7 @@ class BaseGameState {
  protected:
     static uint32_t stateFrameCounter;
     virtual void stateInit() {}
-    virtual void stateUpdate() {}
+    virtual void stateUpdate(int16_t dt) {}
     virtual void stateRender(SpriteRenderer* renderer) {}
  public:
     void initialize() {
@@ -19,8 +19,8 @@ class BaseGameState {
         stateInit();
     }
 
-    void update() {
-        stateUpdate();
+    void update(int16_t dt) {
+        stateUpdate(dt);
         stateFrameCounter++;
     }
 

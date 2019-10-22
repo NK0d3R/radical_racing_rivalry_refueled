@@ -9,4 +9,3 @@ void setup() {
 void loop() {
     R3R::getInstance().update();
 }
-

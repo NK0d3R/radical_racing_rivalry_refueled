@@ -8,7 +8,7 @@
 class StateSaveError : public BaseGameState {
  private:
     virtual void stateInit();
-    virtual void stateUpdate();
+    virtual void stateUpdate(int16_t dt);
     virtual void stateRender(SpriteRenderer* renderer);
 };
 

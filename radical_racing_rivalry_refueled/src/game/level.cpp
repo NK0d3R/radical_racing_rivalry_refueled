@@ -10,13 +10,19 @@
 #include "../game.h"
 
 Level::BackgroundLayer* Level::bgLayers[] = {
-    new BackgroundSprite(25, 0, Defs::BackgroundSun, 0),
-    new BackgroundSprite(25, 190, Defs::BackgroundLayer1, 10),
-    new BackgroundSprite(25, 190, Defs::BackgroundLayer2, 60),
-    new BackgroundGrid(25, 40, 8, 80),
-    new BackgroundLineScroll(41, 16, 250),
-    new BackgroundSprite(42, 240, Defs::BackgroundLayer3, 250)
+    new BackgroundGradient(0, 28, 5, 9, 7, 26, 20, 7),
+    new BackgroundSprite(28, 0, Defs::BackgroundSun, 0),
+    new BackgroundSprite(28, 150, Defs::BackgroundLayer1, 10),
+    new BackgroundSprite(28, 200, Defs::BackgroundLayer2, 40),
+    new BackgroundSprite(28, 220, Defs::BackgroundLayer3, 75),
+    new BackgroundGrid(28, 40, 8, 80),
+    new BackgroundLineScroll(41, 0, 250),
+    new BackgroundSprite(42, 240, Defs::BackgroundLayer4, 250),
+    new BackgroundBlur(0, 40)
 };
+
+Level::BackgroundBlur* Level::backgroundBlur = static_cast<BackgroundBlur*>(
+                                            bgLayers[BlurBackgroundIndex]);
 
 int16_t Level::BackgroundLayer::camPosToOffset(const FP32& cameraPosition) {
     FP32 camPosScaled = (cameraPosition * offsetFactor) / 1000;
@@ -101,77 +107,21 @@ void Level::BackgroundLineScroll::draw(SpriteRenderer* renderer,
 }
 
 
-Level::BackgroundChopper::BackgroundChopper() : BackgroundLayer(0) {
-    chopperAnim.init(GetSprite(Defs::SpriteEnv));
-    xSpeed = FP32(random(100) & 1 ? 1 : -1);
-    wait(true);
-}
-
-void Level::BackgroundChopper::wait(bool isWaiting) {
-    waiting = isWaiting;
-    if (waiting) {
-        timer = random(Defs::BgChopperMinWaitTime, Defs::BgChopperMaxWaitTime);
-    } else {
-        timer = Defs::BgChopperDecisionTime;
-    }
-}
-
-void Level::BackgroundChopper::restart() {
-    int32_t direction = -Utils::sgn(xSpeed.getInt());
-    if (direction < 0) {
-        xPos = FP32(Defs::ScreenW + Defs::BgChopperMarginOffset);
-    } else {
-        xPos = FP32(-Defs::BgChopperMarginOffset);
-    }
-    xSpeed = FP32(direction * random(20, 40));
-    chopperAnim.setAnimation(Defs::AnimChopper,
-                             direction == -1 ? ARD_FLAGS_FLIP_X : 0,
-                             true);
-    yPos = random(10, 15);
-}
-
-void Level::BackgroundChopper::update(int16_t dt) {
-    if (waiting == false) {
-        xPos += (xSpeed * FP32(dt)) / 1000;
-        if (xPos.getInt() < -Defs::BgChopperMarginOffset ||
-            xPos.getInt() > Defs::ScreenW + Defs::BgChopperMarginOffset) {
-            wait(true);
-        } else {
-            timer -= dt;
-            if (timer < 0) {
-                timer = Defs::BgChopperDecisionTime;
-                if (random(100) < 60) {
-                    yPos += random(-1, 3);
-                }
-                if (random(100) < 10) {
-                    xSpeed *= -1;
-                    chopperAnim.setAnimation(Defs::AnimChopper,
-                                             xSpeed.getInt() < 0 ?
-                                             ARD_FLAGS_FLIP_X : 0,
-                                             true);
-                }
-            }
-        }
-        chopperAnim.update(dt);
-    } else {
-        timer -= dt;
-        if (timer < 0) {
-            wait(false);
-            restart();
-        }
-    }
-}
-
-void Level::BackgroundChopper::draw(SpriteRenderer* renderer,
-                                   const FP32& cameraPosition) {
-    if (waiting == false) {
-        chopperAnim.draw(renderer, xPos.getInt(), yPos);
-    }
-}
-
 void Level::BackgroundBlur::draw(SpriteRenderer* renderer,
                                  const FP32& cameraPosition) {
-    renderer->reasonablyFastBlur();
+    if (enabled) {
+        renderer->setClip(0, yTop, Defs::ScreenW, height);
+        renderer->reasonablyFastBlur();
+        renderer->setClip(0, 0, Defs::ScreenW, Defs::ScreenH);
+    }
+}
+
+
+void Level::BackgroundGradient::draw(SpriteRenderer* renderer,
+                                     const FP32& cameraPosition) {
+    renderer->setClip(0, yTop, Defs::ScreenW, height);
+    renderer->drawVerticalGradient(rTop, gTop, bTop, rBot, gBot, bBot);
+    renderer->setClip(0, 0, Defs::ScreenW, Defs::ScreenH);
 }
 
 Level::Level() {
@@ -220,6 +170,7 @@ void Level::restart() {
     mustMoveBarrels = true;
     currentGearShift->reset();
     cameraTarget = playerCar;
+    backgroundBlur->setEnabled(false);
     setState(Countdown);
 }
 
@@ -241,7 +192,7 @@ void Level::setState(LevelState newState) {
                 startScreenAnim(Defs::ScreenW / 2, Defs::ScreenH / 2,
                                 Screen_Sprite, Defs::SpriteHud,
                                 Defs::AnimHUDCountdown);
-                cameraPosition = -200;
+                cameraPosition = -120;
             break;
             case Result:
                 stateCounter = 0;
@@ -263,6 +214,7 @@ void Level::setState(LevelState newState) {
                                      Screen_Flag);
                     maxStateCounter = 240;
                 }
+                backgroundBlur->setEnabled(true);
             break;
         }
         state = newState;
@@ -420,10 +372,14 @@ void Level::drawEndFlag(SpriteRenderer* renderer, uint8_t x,
 }
 
 void Level::updateControls(uint8_t buttonsState, uint8_t oldButtonsState) {
+    uint8_t changedButtons = (buttonsState ^ oldButtonsState);
     if (getGameMode() == DuelDemo) {
+        if (changedButtons != 0) {
+            exitDemo();
+        }
         return;
     }
-    uint8_t changedButtons = (buttonsState ^ oldButtonsState);
+
     if (state != Race) {
         playerCar->pedalToTheMetal(false);
         playerCar->setClutch(false);
@@ -529,14 +485,13 @@ void Level::updateState(int16_t dt) {
                     currentGearShift->update();
                 }
             } else {
-                if (!playerCar->isAlive()) {
+                if (!playerCar->isAlive() &&
+                    !playerCar->isExplosionVisible()) {
                     cameraTarget = enemyCar;
                 }
                 if (levelTimer > Defs::DemoLength ||
                     (!playerCar->isAlive() && !enemyCar->isAlive())) {
-                    R3R::getInstance().setState(
-                        (rand() & 63) < 21 ? Logo : Splash);
-                    setState(Invalid);
+                    exitDemo();
                 }
             }
             if (screenAnimType != None && playerCar->getSpeed() > 0) {
@@ -568,6 +523,11 @@ void Level::updateState(int16_t dt) {
     }
 }
 
+void Level::exitDemo() {
+    R3R::getInstance().setState((rand() & 63) < 21 ? Logo : Splash);
+    setState(Invalid);
+}
+
 void Level::raceStart() {
     foreachGameObject([&](GameObject* obj) { obj->onRaceStart(); });
     setState(Race);
@@ -583,7 +543,7 @@ void Level::updateGeneral(int16_t dt) {
         screenAnim.update(dt);
     }
     foreachGameObject([&](GameObject* obj) { obj->update(dt); });
-    updateCamera();
+    updateCamera(dt);
     foreachGameObject([&](GameObject* obj) { obj->updateScreenX(); });
     for (auto layer : bgLayers) {
         layer->update(dt);
@@ -608,17 +568,18 @@ int32_t Level::worldToScreenX(const FP32& x, const FP32& y) {
 
 uint8_t Level::worldToScreenY(const FP32& x, const FP32& y) {
     return Defs::LevelActionAreaTop + (y * (Defs::LevelActionAreaBottom -
-                                            Defs::LevelActionAreaTop)).getInt();
+                                       Defs::LevelActionAreaTop)).getInt();
 }
 
-void Level::updateCamera() {
+void Level::updateCamera(int16_t dt) {
     FP32 target = cameraTarget->getX();
     if (state == Result && endResult >= RaceEndLose) {
         if (stateCounter < (maxStateCounter >> 2)) {
             target = Defs::RaceLength;
         }
     }
-    target += FP32(0.6f);
-    cameraPosition += target;
-    cameraPosition /= 2;
+    target += FP32(0.35f);
+    FP32 targetCameraSpeed = (target - cameraPosition).fpAbs() * FP32(12);
+    cameraPosition = Utils::approachWithSpeed(
+                                cameraPosition, target, targetCameraSpeed, dt);
 }

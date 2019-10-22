@@ -20,7 +20,7 @@ class StateSplash : public BaseGameState {
                                         (Defs::MenuLogoLastFrame + 1));
 
     virtual void stateInit();
-    virtual void stateUpdate();
+    virtual void stateUpdate(int16_t dt);
     virtual void stateRender(SpriteRenderer* renderer);
 };
 

@@ -8,7 +8,7 @@
 class StateMainMenu : public StateSplash {
  private:
     virtual void stateInit();
-    virtual void stateUpdate();
+    virtual void stateUpdate(int16_t dt);
     virtual void stateRender(SpriteRenderer* renderer);
     void drawButtonHint(uint8_t x, uint8_t y, SpriteRenderer* renderer);
 };

@@ -3,12 +3,12 @@
 #ifndef DEFS_H_
 #define DEFS_H_
 
-#include "engine/primitives.h"
 #include "engine/fixedpoint.h"
+#include "engine/primitives.h"
 #include "res/strings.h"
 
 #define LINE_BUFFER_CAPACITY    (64)
-#define SHOW_FPS                (0)
+#define SHOW_FPS                (1)
 
 class SpriteRenderer;
 
@@ -47,7 +47,8 @@ struct Defs {
         BackgroundSun = 0,
         BackgroundLayer1,
         BackgroundLayer2,
-        BackgroundLayer3
+        BackgroundLayer3,
+        BackgroundLayer4
     };
 
     // SpriteCar anims
@@ -233,6 +234,20 @@ struct Utils {
             value = (value + 1) % range;
         }
         return min + value;
+    }
+
+    static FP32 approachWithSpeed(const FP32& current, const FP32& target,
+                                  const FP32& speed, int16_t dt) {
+        FP32 diff = target - current;
+        FP32 absdiff = diff.fpAbs();
+        FP32 incr = (speed * dt) / 1000;
+        FP32 result = current;
+        if (incr >= absdiff) {
+            result = target;
+        } else {
+            result += Utils::sgn(diff.getInt()) * incr;
+        }
+        return result;
     }
 };
 

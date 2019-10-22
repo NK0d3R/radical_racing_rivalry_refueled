@@ -31,6 +31,7 @@ class R3R {
     BaseGameState*      currentState;
     BaseGameState*      pendingState;
     uint8_t             waitTimeMillis;
+    int32_t             frameTime;
     bool                nextFrame();
     static int32_t bestTimes[4];
     static constexpr uint32_t saveVersion = 1;

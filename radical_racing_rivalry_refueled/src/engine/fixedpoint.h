@@ -3,7 +3,6 @@
 #ifndef FIXEDPOINT_H_
 #define FIXEDPOINT_H_
 
-#include "../stdinc.h"
 #include <type_traits>
 
 template<typename T, typename T2, int shift>
@@ -66,6 +65,12 @@ struct FPValue {
     FPValue& operator/=(T val) {
         value /= val;
         return *this;
+    }
+
+    FPValue fpAbs() {
+        FPValue fp;
+        fp.value = (value < 0) ? -value : value;
+        return fp;
     }
 
 #define BINARY_OP(op)                                               \

@@ -201,7 +201,7 @@ void Car::updateEngine(int16_t dt) {
                                         (engineRPMi - Defs::OverheatRPM) /
                                         Defs::OverheatDiv;
             if (engineRPM >= Defs::MaxRPM) {
-                overheatIncrease << 1;
+                overheatIncrease <<= 1;
             }
             newOverheat += overheatIncrease;
         } else {

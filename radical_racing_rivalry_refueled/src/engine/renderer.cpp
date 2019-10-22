@@ -267,10 +267,11 @@ void SpriteRenderer::renderFireEffect(const uint8_t* data,
 }
 
 void SpriteRenderer::reasonablyFastBlur() {
-    uint16_t offset = frameWidth + 1;
+    uint16_t offset = (clip.x + 1) + (clip.y + 1) * frameWidth;
+    uint16_t endIncrement = frameWidth - clip.w + 2;
     uint16_t value;
-    for (uint8_t line = 0; line < frameHeight - 2; ++line) {
-        for (uint8_t col = 0; col < frameWidth - 2; ++col) {
+    for (int16_t line = 0; line < clip.h - 2; ++line) {
+        for (int16_t col = 0; col < clip.w - 2; ++col) {
             uint16_t totalR = 0;
             uint16_t totalG = 0;
             uint16_t totalB = 0;
@@ -296,7 +297,7 @@ void SpriteRenderer::reasonablyFastBlur() {
                                                          totalB >> 3);
     #undef ADD_FROM_OFFSET
         }
-        offset += 2;
+        offset += endIncrement;
     }
 }
 
@@ -313,12 +314,12 @@ void SpriteRenderer::drawVerticalGradient(int8_t topR, int8_t topG,
     incrR /= totalH;
     incrG /= totalH;
     incrB /= totalH;
-    int16_t currentOffset = clip.x + clip.y * frameWidth;
+    uint16_t currentOffset = clip.x + clip.y * frameWidth;
     for (int16_t line = 0; line < clip.h; ++line) {
         uint16_t color = Utils::make16BitColorLow(crtR.getInt(),
                                                   crtG.getInt(),
                                                   crtB.getInt());
-        int16_t currentPix = currentOffset;
+        uint16_t currentPix = currentOffset;
         for (int16_t col = 0; col < clip.w; ++col) {
             frameBuffer[currentPix++] = color;
         }
