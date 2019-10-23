@@ -170,6 +170,7 @@ void Level::restart() {
     mustMoveBarrels = true;
     currentGearShift->reset();
     cameraTarget = playerCar;
+    cameraPosition = FP32(-120);
     backgroundBlur->setEnabled(false);
     setState(Countdown);
 }
@@ -192,7 +193,6 @@ void Level::setState(LevelState newState) {
                 startScreenAnim(Defs::ScreenW / 2, Defs::ScreenH / 2,
                                 Screen_Sprite, Defs::SpriteHud,
                                 Defs::AnimHUDCountdown);
-                cameraPosition = -120;
             break;
             case Result:
                 stateCounter = 0;
@@ -341,7 +341,7 @@ void Level::drawResult(SpriteRenderer* renderer, uint8_t x, uint8_t y) {
                                     y,
                                     ANCHOR_VCENTER | ANCHOR_HCENTER);
     y += 12;
-    if (endResult > PlayerDeadEngine) {
+    if (endResult >= RaceEndTimeAttack) {
         drawTimer(renderer, x, y, ANCHOR_TOP | ANCHOR_HCENTER,
                   getGameMode() == Duel);
     }
@@ -572,14 +572,25 @@ uint8_t Level::worldToScreenY(const FP32& x, const FP32& y) {
 }
 
 void Level::updateCamera(int16_t dt) {
-    FP32 target = cameraTarget->getX();
+    FP32 target = FP32(0.35f);
+    FP32 targetCameraSpeed = 0;
+    Car* following = cameraTarget;
     if (state == Result && endResult >= RaceEndLose) {
         if (stateCounter < (maxStateCounter >> 2)) {
-            target = Defs::RaceLength;
+            target += Defs::RaceLength;
+            following = nullptr;
         }
     }
-    target += FP32(0.35f);
-    FP32 targetCameraSpeed = (target - cameraPosition).fpAbs() * FP32(12);
+
+    if (following) {
+        target += cameraTarget->getX() -
+                  (Defs::CamMaxDistance * cameraTarget->getSpeed() /
+                   Defs::MaxCarSpeed);
+        targetCameraSpeed = cameraTarget->getSpeed();
+    }
+
+    targetCameraSpeed += (target - cameraPosition).fpAbs() *
+                          Defs::CameraSpeedMultiplier;
     cameraPosition = Utils::approachWithSpeed(
                                 cameraPosition, target, targetCameraSpeed, dt);
 }

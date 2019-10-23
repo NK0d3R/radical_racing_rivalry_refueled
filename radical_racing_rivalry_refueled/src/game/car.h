@@ -8,7 +8,6 @@
 #include "gameobject.h"
 #include "../res/sprites.h"
 #include "../engine/ardusprite.h"
-#include <stdio.h>
 
 class SpriteRenderer;
 class Level;

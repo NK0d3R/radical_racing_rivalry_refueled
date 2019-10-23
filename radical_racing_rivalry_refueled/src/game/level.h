@@ -192,7 +192,7 @@ class Level {
     EndResultType   endResult = NoResult;
     GameObject*     entityRepo[EntityInstance::NbInstances];
     GameObject*     activeEntities[MaxActiveEntities];
-    GameObject*     cameraTarget;
+    Car*            cameraTarget;
     SpriteAnimator  screenAnim;
     ScreenAnimType  screenAnimType;
     Car*            playerCar;

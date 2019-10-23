@@ -8,7 +8,7 @@
 #include "res/strings.h"
 
 #define LINE_BUFFER_CAPACITY    (64)
-#define SHOW_FPS                (1)
+#define SHOW_FPS                (0)
 
 class SpriteRenderer;
 
@@ -155,13 +155,14 @@ struct Defs {
     static constexpr uint16_t OverheatRPM = 7400;
     static constexpr uint16_t OverheatDiv = 100;
     static constexpr uint16_t DemoLength = 18000;
-
+    static constexpr int16_t CameraSpeedMultiplier = 16;
     static const FP32 FPHalfScrW;
     static const FP32 MinRPM;
     static const FP32 MaxRPM;
     static const FP32 RaceLength;
     static const FP32 MaxCarSpeed;
     static const FP32 IdleRPMModif;
+    static const FP32 CamMaxDistance;
 };
 
 struct Utils {

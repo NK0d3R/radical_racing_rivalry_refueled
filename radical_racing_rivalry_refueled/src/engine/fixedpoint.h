@@ -17,13 +17,13 @@ struct FPValue {
 
     template<typename R>
     constexpr FPValue(R v, typename std::enable_if<
-                    std::is_integral<R>::value>::type* = 0):
+                      std::is_integral<R>::value>::type* = 0):
             value(UPSHIFT((T)v))
     {}
 
     template<typename R>
     constexpr FPValue(R v, typename std::enable_if<
-                    std::is_floating_point<R>::value>::type* = 0):
+                      std::is_floating_point<R>::value>::type* = 0):
             value((T)(v * (R)UPSHIFT(1)))
     {}
 

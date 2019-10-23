@@ -12,6 +12,7 @@ const FP32 Defs::MaxRPM(8000);
 const FP32 Defs::RaceLength(2000);
 const FP32 Defs::MaxCarSpeed((293.0f * 1000.0f) / 3600.0f);  // 293 km/h in m/s
 const FP32 Defs::IdleRPMModif(16.0f);     // 16000 rot /s = 16 rot / msec
+const FP32 Defs::CamMaxDistance(2.5f);
 
 void Utils::fastGetDigits(uint16_t value, char* dest, uint16_t nbDigits) {
     int16_t maxVal = 1;
