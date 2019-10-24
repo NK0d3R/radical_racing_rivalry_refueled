@@ -49,7 +49,9 @@ class SpriteRenderer {
     void renderFireEffect(const uint8_t* data, const uint16_t* palette,
                           uint8_t width, uint8_t height, uint8_t scale,
                           uint8_t y);
-    void fastDrawVerticalPattern(uint8_t pattern, uint8_t x, uint8_t y);
+    void fastDrawVerticalPattern(uint8_t pattern, uint8_t x, uint8_t y,
+                                 uint16_t colorZero, uint16_t colorOne,
+                                 uint8_t repeat = 1);
     void reasonablyFastBlur();
     uint16_t addBlendAdd(uint16_t one, uint16_t two) {
         uint8_t totalR = Utils::upperClamp(

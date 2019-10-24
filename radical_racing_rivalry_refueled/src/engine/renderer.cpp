@@ -19,7 +19,19 @@ void SpriteRenderer::putPixel(uint8_t x, uint8_t y, uint16_t color) {
 }
 
 void SpriteRenderer::fastDrawVerticalPattern(uint8_t pattern,
-                                             uint8_t x, uint8_t y) {
+                                             uint8_t x, uint8_t y,
+                                             uint16_t colorZero,
+                                             uint16_t colorOne,
+                                             uint8_t repeat) {
+    uint16_t destOffset = x + y * frameWidth;
+    uint16_t colors[] = { colorZero, colorOne };
+    while (repeat != 0) {
+        for (uint8_t pix = 0; pix < 8; ++pix) {
+            frameBuffer[destOffset] = colors[(pattern >> pix) & 1];
+            destOffset += frameWidth;
+        }
+        repeat -= 1;
+    }
 }
 
 uint8_t bppModes[] = { 1, 2, 4, 8 };

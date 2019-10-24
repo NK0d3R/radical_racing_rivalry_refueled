@@ -146,7 +146,7 @@ struct Defs {
 
     static constexpr uint8_t MaxGear = 5;
 
-    static constexpr uint8_t EndFlagW = 96;
+    static constexpr uint8_t EndFlagW = 80;
     static constexpr uint8_t EndFlagH = 16;
 
     static constexpr uint8_t ResultTextY = 18;

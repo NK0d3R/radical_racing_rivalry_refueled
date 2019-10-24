@@ -213,7 +213,8 @@ class Level {
     static constexpr uint8_t kAccelButton = BTN_B;
     static constexpr uint8_t kClutchButton = BTN_A;
 
-    void drawEndFlag(SpriteRenderer* renderer, uint8_t x, uint8_t y, uint8_t w);
+    void drawEndFlag(SpriteRenderer* renderer,
+                     uint8_t x, uint8_t y, uint8_t w);
     inline void drawHUD(SpriteRenderer* renderer);
     inline void drawCarHUD(SpriteRenderer* renderer, uint8_t x, uint8_t y);
     inline void drawTimer(SpriteRenderer* renderer, uint8_t x, uint8_t y,

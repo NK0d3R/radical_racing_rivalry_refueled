@@ -210,8 +210,8 @@ void Level::setState(LevelState newState) {
                         R3R::getInstance().saveSave();
                     }
                     startScreenAnim((Defs::ScreenW - Defs::EndFlagW) / 2,
-                                     Defs::ResultTextY - (Defs::EndFlagH / 2),
-                                     Screen_Flag);
+                                    Defs::ResultTextY - (Defs::EndFlagH / 2),
+                                    Screen_Flag);
                     maxStateCounter = 240;
                 }
                 backgroundBlur->setEnabled(true);
@@ -354,20 +354,34 @@ void Level::drawResult(SpriteRenderer* renderer, uint8_t x, uint8_t y) {
 void Level::drawEndFlag(SpriteRenderer* renderer, uint8_t x,
                         uint8_t y, uint8_t w) {
     uint8_t pattern = 0b11110000;
-    static PROGMEM const int8_t displ[] = {
-        0, 0, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1
+    static const int8_t displ[] = {
+        1, 1, 1, 0, 0, -1, -1, -1, 0, 0
     };
-    uint8_t displIndex = (R3R::getInstance().getFrameCounter() >> 1) %
-                            sizeof(displ);
+    uint8_t displIndex = R3R::getInstance().getFrameCounter() % sizeof(displ);
     int8_t displY = 0;
+    uint8_t white = 255;
+    uint8_t black = 0;
+    int8_t lastChange = 0;
+    int8_t incr = -1;
     for (int8_t crtX = x; crtX < x + w; ++crtX) {
         if (((crtX - x) & 3) == 0) {
             pattern = ~pattern;
         }
-        displY = y + (int8_t)pgm_read_byte(&displ[displIndex]);
+        displY = y + displ[displIndex];
         displIndex = (displIndex + 1) % sizeof(displ);
-        renderer->fastDrawVerticalPattern(pattern, crtX, displY);
-        renderer->fastDrawVerticalPattern(pattern, crtX, displY + 8);
+        if (displIndex < sizeof(displ) / 2) {
+            white = 255 - displIndex * 25;
+        }
+        else {
+            white = 255 - (sizeof(displ) - displIndex) * 25;
+        }
+        black = (white >> 2);
+        renderer->fastDrawVerticalPattern(pattern, crtX, displY,
+                                          Utils::make16BitColor(
+                                                        black, black, black),
+                                          Utils::make16BitColor(
+                                                        white, white, white),
+                                          2);
     }
 }
 
