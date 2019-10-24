@@ -183,7 +183,7 @@ void Car::updateEngine(int16_t dt) {
             forwardForce = (throttle * engineTorque * getGearRatio(gear)) /
                             kWheelRadius;
         } else {
-            if (throttle > FP32(0)) {
+            if (throttle > FP32(0) && !isClutched()) {
                 engineRPM += (throttle * Defs::IdleRPMModif) * dt;
             } else {
                 engineRPM -= Defs::IdleRPMModif * dt;
