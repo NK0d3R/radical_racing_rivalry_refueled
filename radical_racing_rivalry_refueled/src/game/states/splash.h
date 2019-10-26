@@ -13,7 +13,6 @@ class StateSplash : public BaseGameState {
  private:
     static constexpr uint8_t LogoLetterFrames = 10;
     static constexpr uint8_t LogoLetterWaitFrames = 20;
-    static constexpr uint16_t DemoStartTime = 330;
     static constexpr uint8_t LogoLetterTotalFrames =
                                         LogoLetterWaitFrames +
                                         (LogoLetterFrames *

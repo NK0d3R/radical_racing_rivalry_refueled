@@ -35,7 +35,7 @@ void StateSplash::stateUpdate(int16_t dt) {
     if ((g.oldButtonsState ^ g.buttonsState) & g.buttonsState) {
         g.setState(MainMenu);
     }
-    if (stateFrameCounter >= DemoStartTime) {
+    if (stateFrameCounter >= Defs::DemoStartTime) {
         uint8_t playerChassis = Utils::random8Except(0, Defs::CarNbChassis);
         l.setGameMode(Level::GameMode::DuelDemo);
         l.setMainChassis(playerChassis);

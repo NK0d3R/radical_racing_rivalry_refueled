@@ -155,6 +155,7 @@ struct Defs {
     static constexpr uint16_t OverheatRPM = 7400;
     static constexpr uint16_t OverheatDiv = 100;
     static constexpr uint16_t DemoLength = 18000;
+    static constexpr uint16_t DemoStartTime = 330;
     static constexpr int16_t CameraSpeedMultiplier = 16;
     static const FP32 FPHalfScrW;
     static const FP32 MinRPM;

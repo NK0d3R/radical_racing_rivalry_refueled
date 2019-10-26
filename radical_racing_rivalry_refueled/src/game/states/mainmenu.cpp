@@ -38,6 +38,12 @@ void StateMainMenu::stateUpdate(int16_t dt) {
         g.saveSave();
         g.setState(Ingame);
     }
+    if (changedButtons != 0) {
+        stateFrameCounter = 0;
+    }
+    if (stateFrameCounter > Defs::DemoStartTime) {
+        g.setState(Splash);
+    }
 }
 
 void StateMainMenu::stateRender(SpriteRenderer* renderer) {
