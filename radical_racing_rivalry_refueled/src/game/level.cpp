@@ -328,7 +328,7 @@ void Level::drawCarHUD(SpriteRenderer* renderer, uint8_t x, uint8_t y) {
 
 void Level::drawHUD(SpriteRenderer* renderer) {
     if (playerCar->isClutched()) {
-        currentGearShift->draw(renderer, 76, 52);
+        currentGearShift->draw(renderer, 76, 48);
     } else {
         drawCarHUD(renderer, 95, 63);
     }

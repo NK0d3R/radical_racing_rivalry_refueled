@@ -90,13 +90,17 @@ struct Defs {
     enum : uint8_t {
         HUDGearsManualUp = 6,
         HUDGearsManualDown,
-        HUDGearsManualBg
+        HUDGearsManualBg,
+        HUDGearsManualOutlineOK,
+        HUDGearsManualOutlineBad,
     };
 
     // AnimCarGearsAuto frames
     enum : uint8_t {
         HUDGearsAutoBg = 0,
-        HUDGearsAutoStick
+        HUDGearsAutoStick,
+        HUDGearsAutoOutlineOK,
+        HUDGearsAutoOutlineBad
     };
 
     // SpriteMenu anims
@@ -174,10 +178,10 @@ struct Utils {
     static T sgnz(T x) { return x == 0 ? 0 : Utils::sgn(x); }
 
     template<typename T>
-    static T min(T x, T y) { return x < y ? x : y; }
+    static T mint(T x, T y) { return x < y ? x : y; }
 
     template<typename T>
-    static T max(T x, T y) { return x > y ? x : y; }
+    static T maxt(T x, T y) { return x > y ? x : y; }
 
     template<typename T>
     static T pixelsToMeters(T x) { return (x / 10); }

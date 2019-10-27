@@ -3,6 +3,9 @@
 #include "ardusprite.h"
 #include "renderer.h"
 
+template
+int32_t Sprite::measureAnimationFrame<true>(uint8_t animation, uint8_t frame);
+
 void Sprite::create(const uint8_t* data) {
     int totalAnimFrames = 0;
     int totalFrameElems = 0;
@@ -129,10 +132,10 @@ int32_t Sprite::measureAnimationFrame(uint8_t animation, uint8_t frame) {
         memcpy_P(&currentElem, &elements[currentFrameElem.elementIdx],
                  sizeof(SpriteElement));
 
-        minVal = Utils::min<int16_t>(
+        minVal = Utils::mint<int16_t>(
                     minVal, xAxis ? currentFrameElem.posX :
                     currentFrameElem.posY);
-        maxVal = Utils::max<int16_t>(
+        maxVal = Utils::maxt<int16_t>(
                     maxVal,
                     xAxis ? currentFrameElem.posX + currentElem.width - 1 :
                     currentFrameElem.posY + currentElem.height - 1);

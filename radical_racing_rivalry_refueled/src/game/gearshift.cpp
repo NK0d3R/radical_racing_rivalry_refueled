@@ -28,6 +28,9 @@ void GearShiftAuto::draw(SpriteRenderer* renderer, int16_t x, int16_t y) {
     Sprite* hud = GetSprite(Defs::SpriteHud);
     hud->drawAnimationFrame(renderer, Defs::AnimHUDGearsAuto,
                             Defs::HUDGearsManualBg, x, y, 0);
+    hud->drawAnimationFrame(renderer, Defs::AnimHUDGearsAuto,
+                            Defs::HUDGearsManualOutlineOK + (state != Idle),
+                            x, y, 0);
     if (currentGear < Defs::MaxGear) {
         hud->drawAnimationFrame(renderer, Defs::AnimHUDGearsAuto,
                                 Defs::HUDGearsManualUp, x,
@@ -149,4 +152,7 @@ void GearShiftManual::draw(SpriteRenderer* renderer, int16_t x, int16_t y) {
     }
     hud->drawAnimationFrame(renderer, Defs::AnimHUDGearsManual,
                             Defs::HUDGearsAutoStick, xPos, yPos, 0);
+    hud->drawAnimationFrame(renderer, Defs::AnimHUDGearsManual,
+                            Defs::HUDGearsAutoOutlineOK + (state != Idle),
+                            xPos, yPos, 0);
 }
