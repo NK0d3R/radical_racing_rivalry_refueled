@@ -16,7 +16,7 @@ class Car;
 
 class Level {
  public:
-    Level();
+    void initialize();
     void restart();
     void draw(SpriteRenderer* renderer);
     void update(int16_t dt);

@@ -106,6 +106,7 @@ void Sprite::fillSingleLine(SpriteRenderer* renderer, uint8_t element,
                              sprFlags << SpriteFlagsStartBit);
 }
 
+template<bool xAxis>
 int32_t Sprite::measureAnimationFrame(uint8_t animation, uint8_t frame) {
     SpriteAnim currentAnim;
     memcpy_P(&currentAnim, &anims[animation], sizeof(SpriteAnim));
@@ -115,11 +116,8 @@ int32_t Sprite::measureAnimationFrame(uint8_t animation, uint8_t frame) {
              &animFrames[currentAnim.framesStart + frame],
              sizeof(SpriteAnimFrame));
 
-    int16_t width = 0;
-    int16_t height = 0;
-
-    int16_t crtWidth = 0;
-    int16_t crtHeight = 0;
+    int16_t minVal = 0;
+    int16_t maxVal = 0;
 
     for (int idx = 0; idx < currentFrame.elemsNb; ++idx) {
         SpriteFrameElement currentFrameElem;
@@ -131,18 +129,15 @@ int32_t Sprite::measureAnimationFrame(uint8_t animation, uint8_t frame) {
         memcpy_P(&currentElem, &elements[currentFrameElem.elementIdx],
                  sizeof(SpriteElement));
 
-        crtWidth = (int16_t)currentFrameElem.posX +
-                                (int16_t)currentElem.width;
-        crtHeight = (int16_t)currentFrameElem.posY +
-                                (int16_t)currentElem.height;
-        if (crtWidth > width) {
-            width = crtWidth;
-        }
-        if (crtHeight > height) {
-            height = crtHeight;
-        }
+        minVal = Utils::min<int16_t>(
+                    minVal, xAxis ? currentFrameElem.posX :
+                    currentFrameElem.posY);
+        maxVal = Utils::max<int16_t>(
+                    maxVal,
+                    xAxis ? currentFrameElem.posX + currentElem.width - 1 :
+                    currentFrameElem.posY + currentElem.height - 1);
     }
-    return (width | (height << 16));
+    return ((minVal & 0xFFFF) | ((maxVal & 0xFFFF) << 16));
 }
 
 uint8_t Sprite::getElementW(uint8_t element) {
@@ -242,9 +237,9 @@ uint16_t Font::getStringWidth(const char* string, int8_t charSpacing) {
         if (mapIndex < mappingLen) {
             crtFrame = pgm_read_byte(&mapping[mapIndex]);
             if (crtFrame != defaultFrame) {
-                crtFrameW = GET_W_FROM_SIZE(
-                                measureAnimationFrame(0, crtFrame)) +
-                            charSpacing;
+                crtFrameW = GET_MAXX_FROM_PACK(
+                                measureAnimationFrame<true>(0, crtFrame)) +
+                            charSpacing + 1;
             } else {
                 crtFrameW = spaceWidth;
             }

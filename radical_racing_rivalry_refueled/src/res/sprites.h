@@ -10,12 +10,12 @@
 struct Sprite;
 struct Font;
 
-inline Sprite* GetSprite(int8_t idx) {
+inline Sprite* GetSprite(uint8_t idx) {
     static Sprite sprites[Defs::SpritesNb];
     return &sprites[idx];
 }
 
-inline Font* GetFont(int8_t idx) {
+inline Font* GetFont(uint8_t idx) {
     static Font fonts[Defs::FontsNb];
     return &fonts[idx];
 }

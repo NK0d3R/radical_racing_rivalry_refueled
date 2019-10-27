@@ -124,15 +124,28 @@ void Level::BackgroundGradient::draw(SpriteRenderer* renderer,
     renderer->setClip(0, 0, Defs::ScreenW, Defs::ScreenH);
 }
 
-Level::Level() {
-    entityRepo[EntityInstance::PlayerCar] = new Car(this, 43);
+void Level::initialize() {
+    int16_t carMinX = GET_MINX_FROM_PACK(
+                GetSprite(Defs::SpriteCar)->measureAnimationFrame<true>(
+                                                    Defs::AnimCarChassis, 0));
+    int16_t carMaxX = GET_MAXX_FROM_PACK(
+                GetSprite(Defs::SpriteCar)->measureAnimationFrame<true>(
+                                                    Defs::AnimCarLights, 0));
+    entityRepo[EntityInstance::PlayerCar] = new Car(this, carMinX, carMaxX);
     for (uint8_t idx = EntityInstance::EnemyCar1;
          idx <= EntityInstance::EnemyCar2; ++idx) {
-        entityRepo[idx] = new EnemyCar(this, 43);
+        entityRepo[idx] = new EnemyCar(this, carMinX, carMaxX);
     }
+    int32_t barrelBounds =
+        GetSprite(Defs::SpriteEnv)->measureAnimationFrame<true>(
+                                                    Defs::AnimBarrel, 0);
     for (uint8_t idx = EntityInstance::Barrel1;
          idx <= EntityInstance::Barrel2; ++idx) {
-        entityRepo[idx] = new AnimatedGameObject(this, 10, Defs::SpriteEnv, 1);
+        entityRepo[idx] = new AnimatedGameObject(
+                                    this,
+                                    GET_MINX_FROM_PACK(barrelBounds),
+                                    GET_MAXX_FROM_PACK(barrelBounds),
+                                    Defs::SpriteEnv, Defs::AnimBarrel);
     }
     state = Invalid;
 }
@@ -371,8 +384,7 @@ void Level::drawEndFlag(SpriteRenderer* renderer, uint8_t x,
         displIndex = (displIndex + 1) % sizeof(displ);
         if (displIndex < sizeof(displ) / 2) {
             white = 255 - displIndex * 25;
-        }
-        else {
+        } else {
             white = 255 - (sizeof(displ) - displIndex) * 25;
         }
         black = (white >> 2);

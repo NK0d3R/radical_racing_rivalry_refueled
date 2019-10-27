@@ -82,7 +82,8 @@ void Car::CarLight::draw(SpriteRenderer* renderer, int16_t x, int16_t y) {
     }
 }
 
-Car::Car(Level* p, uint8_t scrW) : GameObject(p, scrW) {
+Car::Car(Level* p, int8_t scrMinX, int8_t scrMaxX) :
+                                    GameObject(p, scrMinX, scrMaxX) {
     carLights[0] = new NeonLight(Defs::AnimCarNeon, 0);
     carLights[1] = new CarLight(Defs::AnimCarLights,
                                 Defs::LightFrameHeadlights);

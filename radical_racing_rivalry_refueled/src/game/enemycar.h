@@ -8,8 +8,7 @@
 
 class EnemyCar final : public Car {
  public:
-    EnemyCar(Level* p, uint8_t scrW) :
-        Car(p, scrW) {}
+    using Car::Car;
     virtual void reset(const FP32& x, const FP32& z);
     virtual void update(int16_t dt);
     virtual void onRaceStart();

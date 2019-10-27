@@ -4,9 +4,10 @@
 #include "level.h"
 #include "../res/sprites.h"
 
-AnimatedGameObject::AnimatedGameObject(Level* p, uint8_t scrW,
+AnimatedGameObject::AnimatedGameObject(Level* p,
+                                       int8_t scrMinX, int8_t scrMaxX,
                                        uint8_t spr, uint8_t anim):
-                                       GameObject(p, scrW) {
+                                       GameObject(p, scrMinX, scrMaxX) {
     animator.init(GetSprite(spr));
     animator.setAnimation(anim, 0, true);
 }

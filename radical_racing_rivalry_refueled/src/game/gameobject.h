@@ -16,12 +16,12 @@ class GameObject {
     // Screen coordinates
     int32_t     screenX;
     uint8_t     screenY;
-    uint8_t     screenW;
-
+    int8_t      screenMinX;
+    int8_t      screenMaxX;
     Level*      parent;
  public:
-    GameObject(Level* p, uint8_t scrW):
-        parent(p), screenW(scrW) {}
+    GameObject(Level* p, int8_t scrMinX, int8_t scrMaxX):
+        parent(p), screenMinX(scrMinX), screenMaxX(scrMaxX) {}
     void updateScreenX();
     bool isVisible();
     FP32& getX()            { return xPos; }

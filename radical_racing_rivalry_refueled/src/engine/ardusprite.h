@@ -23,8 +23,8 @@
 #define ARD_FLAGS_FLIP_Y    (1 << 1)
 #define ARD_FLAGS_ADD       (1 << 2)
 
-#define GET_W_FROM_SIZE(sz) (uint16_t)(sz & 0xFFFF)
-#define GET_H_FROM_SIZE(sz) (uint16_t)((sz & 0xFFFF0000) >> 16)
+#define GET_MINX_FROM_PACK(sz) (int16_t)(sz & 0xFFFF)
+#define GET_MAXX_FROM_PACK(sz) (int16_t)((sz & 0xFFFF0000) >> 16)
 
 class SpriteRenderer;
 
@@ -86,6 +86,7 @@ struct Sprite {
                         uint8_t posX, uint8_t posY, uint8_t srcY);
     uint8_t getElementW(uint8_t element);
     uint8_t getElementH(uint8_t element);
+    template<bool xAxis>
     int32_t measureAnimationFrame(uint8_t animation, uint8_t frame);
     void create(const uint8_t* data);
     virtual ~Sprite() { if (paletteData) delete[] paletteData; }

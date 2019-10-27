@@ -39,7 +39,7 @@ struct Defs {
     // SpriteEnv anims
     enum : uint8_t {
         AnimBackgrounds = 0,
-        AnimChopper  // Currently removed from sprite
+        AnimBarrel
     };
 
     // AnimBackgrounds frames
@@ -172,6 +172,12 @@ struct Utils {
 
     template<typename T>
     static T sgnz(T x) { return x == 0 ? 0 : Utils::sgn(x); }
+
+    template<typename T>
+    static T min(T x, T y) { return x < y ? x : y; }
+
+    template<typename T>
+    static T max(T x, T y) { return x > y ? x : y; }
 
     template<typename T>
     static T pixelsToMeters(T x) { return (x / 10); }

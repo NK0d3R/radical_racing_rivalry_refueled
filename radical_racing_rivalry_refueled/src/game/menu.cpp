@@ -11,9 +11,10 @@ void Menu::drawSpriteElementBackground(SpriteRenderer* renderer,
                                        int16_t x, int16_t y, int8_t height,
                                        bool hasArrows) {
     Sprite* spr = GetSprite(Defs::SpriteMenu);
-    static int16_t bgTileW = GET_W_FROM_SIZE(spr->measureAnimationFrame(
+    static int16_t bgTileW = GET_MAXX_FROM_PACK(
+                                spr->measureAnimationFrame<true>(
                                                     Defs::AnimMenuElements,
-                                                    Defs::MenuItemBg));
+                                                    Defs::MenuItemBg)) + 1;
     renderer->setClip(x - (width >> 1), y - (height >> 1), width, height);
     int16_t maxX = renderer->getClip().maxX;
     uint32_t frame = R3R::getInstance().getFrameCounter();

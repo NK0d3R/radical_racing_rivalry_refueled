@@ -54,6 +54,7 @@ void R3R::initialize(uint8_t fps) {
     GetFont(Defs::FontMain)->create(FONT_DATA, mapping, nb_map_elems,
         Defs::MainFontSpaceW, Defs::MainFontHeight,
         default_frame, map_start_char);
+    level.initialize();
     savingEnabled = initializeFileSystem();
     saveLoad();
     if (savingEnabled) {
