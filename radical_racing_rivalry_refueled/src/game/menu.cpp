@@ -143,9 +143,9 @@ PROGMEM const uint32_t mainmenu[] = {
 
 PROGMEM const uint32_t endracemenu[] = {
     Menu::itemDataCreate(Defs::MenuActionRestart, 0, 0,
-                         Strings::Igm_Restart, 16),
+                         Strings::Igm_Restart, 18),
     Menu::itemDataCreate(Defs::MenuActionBackToMM, 0, 0,
-                         Strings::Igm_BackToMM, 16)
+                         Strings::Igm_BackToMM, 18)
 };
 
 const uint32_t* getMenuData(uint8_t menu) {

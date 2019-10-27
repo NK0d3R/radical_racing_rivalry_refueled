@@ -5,7 +5,7 @@
 
 void StateAfterGameMenu::stateInit() {
     Menu& m = R3R::getInstance().getMenu();
-    m.set(getMenuData(1), 2, 80, 0);
+    m.set(getMenuData(1), 2, 96, 0);
     m.restart();
 }
 
@@ -26,5 +26,7 @@ void StateAfterGameMenu::stateUpdate(int16_t dt) {
 }
 
 void StateAfterGameMenu::stateRender(SpriteRenderer* renderer) {
-    R3R::getInstance().getMenu().draw(renderer, (Defs::ScreenW >> 1), 16);
+    renderer->drawVerticalGradient(0, 0, 0,
+                                   10, 8, 10);
+    R3R::getInstance().getMenu().draw(renderer, (Defs::ScreenW >> 1), 14);
 }
